@@ -80,6 +80,7 @@
 </div>
 </body>
 </html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
@@ -94,7 +95,7 @@
             flex-direction: column;
             align-items: center; 
             justify-content: center;
-            width: 50%;
+            width: 100%;
             max-width: 600px; 
             margin: auto;
             background: white;
@@ -141,7 +142,15 @@
             background-color: #311b92;
         }
 
-        canvas { border: 1px solid black; margin-top: 10px; display: block; }
+        canvas { 
+            border: 1px solid black; 
+            margin-top: 10px; 
+            display: block; 
+            width: 100%; 
+            height: auto; 
+            max-width: 500px; 
+            touch-action: none; /* Evita el desplazamiento en dispositivos táctiles */
+        }
 
         /* Estilos para el modal */
         .modal {
@@ -209,7 +218,7 @@
     <div id="thankYouModal" class="modal">
         <div class="modal-content">
             <h2>Cảm ơn bạn đã gửi biểu mẫu!</h2>
-            <!--  <button onclick="closeModal()">Đóng</button> -->
+          <!--  <button onclick="closeModal()">Đóng</button>-->
         </div>
     </div>
 
@@ -218,14 +227,36 @@
         var ctx = canvas.getContext("2d");
         var drawing = false;
 
+        // Ajustar el tamaño del canvas para dispositivos móviles
+        function resizeCanvas() {
+            var maxWidth = 500; // Ancho máximo del canvas
+            var width = Math.min(window.innerWidth * 0.9, maxWidth); // 90% del ancho de la pantalla o el máximo
+            canvas.width = width;
+            canvas.height = width * 0.4; // Mantener una relación de aspecto
+        }
+        window.addEventListener("resize", resizeCanvas);
+        resizeCanvas(); // Ajustar el tamaño inicial
+
+        // Eventos de ratón
         canvas.addEventListener("mousedown", startDrawing);
         canvas.addEventListener("mouseup", stopDrawing);
         canvas.addEventListener("mousemove", draw);
+
+        // Eventos táctiles
+        canvas.addEventListener("touchstart", startDrawingTouch);
+        canvas.addEventListener("touchend", stopDrawing);
+        canvas.addEventListener("touchmove", drawTouch);
 
         function startDrawing(e) {
             drawing = true;
             ctx.beginPath();
             draw(e);
+        }
+
+        function startDrawingTouch(e) {
+            e.preventDefault(); // Evitar el desplazamiento de la página
+            var touch = e.touches[0];
+            startDrawing({ offsetX: touch.clientX - canvas.offsetLeft, offsetY: touch.clientY - canvas.offsetTop });
         }
 
         function stopDrawing() {
@@ -244,6 +275,12 @@
             ctx.stroke();
             ctx.beginPath();
             ctx.moveTo(x, y);
+        }
+
+        function drawTouch(e) {
+            e.preventDefault(); // Evitar el desplazamiento de la página
+            var touch = e.touches[0];
+            draw({ offsetX: touch.clientX - canvas.offsetLeft, offsetY: touch.clientY - canvas.offsetTop });
         }
 
         document.getElementById("clearButton").addEventListener("click", function() {
