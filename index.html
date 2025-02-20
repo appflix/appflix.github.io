@@ -228,17 +228,50 @@
         var canvas = document.getElementById("signature");
         var ctx = canvas.getContext("2d");
         var drawing = false;
-
+        var savedCanvasData; // Variable para guardar el estado del canvas
+    
         // Ajustar el tamaño del canvas para dispositivos móviles
         function resizeCanvas() {
             var maxWidth = 500; // Ancho máximo del canvas
             var width = Math.min(window.innerWidth * 0.9, maxWidth); // 90% del ancho de la pantalla o el máximo
             canvas.width = width;
             canvas.height = width * 0.4; // Mantener una relación de aspecto
+    
+            // Restaurar el contenido del canvas si hay datos guardados
+            if (savedCanvasData) {
+                var img = new Image();
+                img.src = savedCanvasData;
+                img.onload = function () {
+                    ctx.drawImage(img, 0, 0);
+                };
+            }
         }
-        window.addEventListener("resize", resizeCanvas);
+    
+        // Guardar el estado del canvas antes de que el teclado se abra o se cierre
+        function saveCanvasState() {
+            savedCanvasData = canvas.toDataURL(); // Guardar la imagen del canvas como una URL de datos
+        }
+    
+        // Restaurar el estado del canvas después de que el teclado se cierre
+        function restoreCanvasState() {
+            if (savedCanvasData) {
+                var img = new Image();
+                img.src = savedCanvasData;
+                img.onload = function () {
+                    ctx.drawImage(img, 0, 0);
+                };
+            }
+        }
+    
+        // Evento de redimensionamiento de la ventana
+        window.addEventListener("resize", function () {
+            saveCanvasState(); // Guardar el estado del canvas antes de redimensionar
+            resizeCanvas(); // Redimensionar el canvas
+            restoreCanvasState(); // Restaurar el estado del canvas después de redimensionar
+        });
+    
         resizeCanvas(); // Ajustar el tamaño inicial
-
+    
         // Obtener la posición del canvas en la pantalla
         function getCanvasPosition() {
             var rect = canvas.getBoundingClientRect();
@@ -247,23 +280,23 @@
                 offsetY: rect.top
             };
         }
-
+    
         // Eventos de ratón
         canvas.addEventListener("mousedown", startDrawing);
         canvas.addEventListener("mouseup", stopDrawing);
         canvas.addEventListener("mousemove", draw);
-
+    
         // Eventos táctiles
         canvas.addEventListener("touchstart", startDrawingTouch);
         canvas.addEventListener("touchend", stopDrawingTouch);
         canvas.addEventListener("touchmove", drawTouch);
-
+    
         function startDrawing(e) {
             drawing = true;
             ctx.beginPath();
             draw(e);
         }
-
+    
         function startDrawingTouch(e) {
             e.preventDefault(); // Evitar el desplazamiento de la página
             var touch = e.touches[0];
@@ -273,19 +306,19 @@
                 offsetY: touch.clientY - canvasPos.offsetY
             });
         }
-
+    
         function stopDrawing() {
             drawing = false;
             ctx.beginPath();
         }
-
+    
         function stopDrawingTouch(e) {
             e.preventDefault(); // Evitar el desplazamiento de la página
             if (e.touches.length === 0) { // Solo detener si no hay más toques
                 stopDrawing();
             }
         }
-
+    
         function draw(e) {
             if (!drawing) return;
             var x = e.offsetX;
@@ -298,7 +331,7 @@
             ctx.beginPath();
             ctx.moveTo(x, y);
         }
-
+    
         function drawTouch(e) {
             e.preventDefault(); // Evitar el desplazamiento de la página
             var touch = e.touches[0];
@@ -308,26 +341,27 @@
                 offsetY: touch.clientY - canvasPos.offsetY
             });
         }
-
+    
         // Borrar el canvas solo cuando se hace clic en el botón "Xóa chữ ký"
-        document.getElementById("clearButton").addEventListener("click", function() {
+        document.getElementById("clearButton").addEventListener("click", function () {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+            savedCanvasData = null; // Limpiar los datos guardados
         });
-
-        document.getElementById("submit").addEventListener("click", function() {
+    
+        document.getElementById("submit").addEventListener("click", function () {
             var apartmentCode = document.getElementById("apartmentCode").value;
             var owner = document.getElementById("owner").value;
             var representative = document.getElementById("representative").value;
             var phone = document.getElementById("phone").value;
             var signatureUrl = canvas.toDataURL("image/png");
-
+    
             var formData = new FormData();
             formData.append("entry.294998651", apartmentCode);
             formData.append("entry.1056316806", owner);
             formData.append("entry.1210988443", representative);
             formData.append("entry.486555366", phone);
             formData.append("entry.619634509", signatureUrl);
-
+    
             fetch("https://docs.google.com/forms/d/e/1FAIpQLSfCVp93vBWB10Pk3zb44QXwmsalXMynRA9S27r5luS4bamLOA/formResponse", {
                 method: "POST",
                 body: formData,
@@ -339,20 +373,20 @@
                 console.log("Có lỗi xảy ra khi gửi biểu mẫu. Vui lòng thử lại.");
             });
         });
-
+    
         // Función para mostrar el modal
         function showModal() {
             var modal = document.getElementById("thankYouModal");
             modal.style.display = "flex";
         }
-
-// Función para cerrar el modal, recargar la página y llevarla hacia arriba
-function closeModal() {
-    var modal = document.getElementById("thankYouModal");
-    modal.style.display = "none";
-    location.reload();  // Recarga la página
-    window.scrollTo(0, 0);  // Desplaza la página hacia la parte superior
-}
+    
+        // Función para cerrar el modal, recargar la página y llevarla hacia arriba
+        function closeModal() {
+            var modal = document.getElementById("thankYouModal");
+            modal.style.display = "none";
+            location.reload();  // Recarga la página
+            window.scrollTo(0, 0);  // Desplaza la página hacia la parte superior
+        }
     </script>
 </body>
 </html>
