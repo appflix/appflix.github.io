@@ -82,6 +82,7 @@
 </html>
 <!DOCTYPE html>
 <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
@@ -219,7 +220,7 @@
     <div id="thankYouModal" class="modal">
         <div class="modal-content">
             <h2>Cảm ơn bạn đã gửi biểu mẫu!</h2>
-
+            <button onclick="closeModal()">Nhập câu trả lời khác</button>
         </div>
     </div>
 
@@ -254,7 +255,7 @@
 
         // Eventos táctiles
         canvas.addEventListener("touchstart", startDrawingTouch);
-        canvas.addEventListener("touchend", stopDrawing);
+        canvas.addEventListener("touchend", stopDrawingTouch);
         canvas.addEventListener("touchmove", drawTouch);
 
         function startDrawing(e) {
@@ -276,6 +277,13 @@
         function stopDrawing() {
             drawing = false;
             ctx.beginPath();
+        }
+
+        function stopDrawingTouch(e) {
+            e.preventDefault(); // Evitar el desplazamiento de la página
+            if (e.touches.length === 0) { // Solo detener si no hay más toques
+                stopDrawing();
+            }
         }
 
         function draw(e) {
@@ -301,6 +309,7 @@
             });
         }
 
+        // Borrar el canvas solo cuando se hace clic en el botón "Xóa chữ ký"
         document.getElementById("clearButton").addEventListener("click", function() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
         });
@@ -337,11 +346,13 @@
             modal.style.display = "flex";
         }
 
-        // Función para cerrar el modal
-        function closeModal() {
-            var modal = document.getElementById("thankYouModal");
-            modal.style.display = "none";
-        }
+// Función para cerrar el modal, recargar la página y llevarla hacia arriba
+function closeModal() {
+    var modal = document.getElementById("thankYouModal");
+    modal.style.display = "none";
+    location.reload();  // Recarga la página
+    window.scrollTo(0, 0);  // Desplaza la página hacia la parte superior
+}
     </script>
 </body>
 </html>
