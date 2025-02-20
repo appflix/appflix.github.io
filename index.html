@@ -81,6 +81,7 @@
 </body>
 </html>
 <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
@@ -218,7 +219,7 @@
     <div id="thankYouModal" class="modal">
         <div class="modal-content">
             <h2>Cảm ơn bạn đã gửi biểu mẫu!</h2>
-          <!--  <button onclick="closeModal()">Đóng</button>-->
+
         </div>
     </div>
 
@@ -236,6 +237,15 @@
         }
         window.addEventListener("resize", resizeCanvas);
         resizeCanvas(); // Ajustar el tamaño inicial
+
+        // Obtener la posición del canvas en la pantalla
+        function getCanvasPosition() {
+            var rect = canvas.getBoundingClientRect();
+            return {
+                offsetX: rect.left,
+                offsetY: rect.top
+            };
+        }
 
         // Eventos de ratón
         canvas.addEventListener("mousedown", startDrawing);
@@ -256,7 +266,11 @@
         function startDrawingTouch(e) {
             e.preventDefault(); // Evitar el desplazamiento de la página
             var touch = e.touches[0];
-            startDrawing({ offsetX: touch.clientX - canvas.offsetLeft, offsetY: touch.clientY - canvas.offsetTop });
+            var canvasPos = getCanvasPosition();
+            startDrawing({
+                offsetX: touch.clientX - canvasPos.offsetX,
+                offsetY: touch.clientY - canvasPos.offsetY
+            });
         }
 
         function stopDrawing() {
@@ -280,7 +294,11 @@
         function drawTouch(e) {
             e.preventDefault(); // Evitar el desplazamiento de la página
             var touch = e.touches[0];
-            draw({ offsetX: touch.clientX - canvas.offsetLeft, offsetY: touch.clientY - canvas.offsetTop });
+            var canvasPos = getCanvasPosition();
+            draw({
+                offsetX: touch.clientX - canvasPos.offsetX,
+                offsetY: touch.clientY - canvasPos.offsetY
+            });
         }
 
         document.getElementById("clearButton").addEventListener("click", function() {
