@@ -211,6 +211,8 @@
         <label>Điện thoại:</label>
         <input type="tel" id="phone" required>
 
+
+
         <canvas id="signature" width="500" height="200"></canvas>
         <button id="clearButton">Xóa chữ ký</button>
         <button id="submit">Gửi</button>
@@ -225,6 +227,53 @@
     </div>
 
     <script>
+
+
+
+
+       // Generar un UUID único
+       var uuid = crypto.randomUUID();
+
+let apartamentosRegistrados = [];
+
+// Obtener los códigos de Google Sheets
+document.getElementById("apartmentCode").disabled = true;
+
+fetch("https://script.google.com/macros/s/AKfycbwLHbrh3_H1Eb28RRxyHS8dWOd5qGAUHhMDvS_ZP2GXKf7JW_4eBz4gCW-_nD1zX96h/exec")
+    .then(response => response.json())
+    .then(data => {
+        apartamentosRegistrados = data.map(codigo => codigo.trim().toUpperCase());
+        document.getElementById("apartmentCode").disabled = false; // Habilitar después de cargar
+    })
+    .catch(error => console.error("Error al obtener los códigos:", error));
+
+// Validar el código cuando el usuario escribe
+document.getElementById("apartmentCode").addEventListener("blur", function () {
+    const codigoIngresado = this.value.trim().toUpperCase();
+    
+    if (apartamentosRegistrados.includes(codigoIngresado)) {
+        alert("⚠️ Mã căn hộ này đã được đăng ký. Vui lòng liên hệ với chúng tôi qua Zalo hoặc email.");
+        this.value = ""; // Limpiar el campo
+        this.focus(); // Mantener el cursor en el campo
+    }
+});
+
+// Evitar envío si el código está repetido
+document.getElementById("submit").addEventListener("click", function (event) {
+    const codigoIngresado = document.getElementById("apartmentCode").value.trim().toUpperCase();
+    
+    if (apartamentosRegistrados.includes(codigoIngresado)) {
+        alert("⚠️ Mã căn hộ này đã được đăng ký. Vui lòng liên hệ với chúng tôi qua Zalo hoặc email.");
+        event.preventDefault(); // Evitar que se envíe el formulario
+    }
+});
+
+
+
+
+
+
+
         var canvas = document.getElementById("signature");
         var ctx = canvas.getContext("2d");
         var drawing = false;
@@ -349,11 +398,74 @@
         });
     
         document.getElementById("submit").addEventListener("click", function () {
+      
             var apartmentCode = document.getElementById("apartmentCode").value;
             var owner = document.getElementById("owner").value;
             var representative = document.getElementById("representative").value;
             var phone = document.getElementById("phone").value;
             var signatureUrl = canvas.toDataURL("image/png");
+
+
+            if (apartamentosRegistrados.includes(apartmentCode)) {
+        alert("⚠️ Mã căn hộ này đã được đăng ký. Vui lòng liên hệ với chúng tôi qua Zalo hoặc email.");
+        event.preventDefault(); // Evitar envío
+        return;
+    }
+
+
+        // ⚠️ Validar si el canvas está vacío
+        function isCanvasEmpty(canvas) {
+        var blankCanvas = document.createElement("canvas");
+        blankCanvas.width = canvas.width;
+        blankCanvas.height = canvas.height;
+        return canvas.toDataURL() === blankCanvas.toDataURL();
+    }
+
+    if (isCanvasEmpty(canvas)) {
+        alert("⚠️ Bạn phải ký trước khi gửi biểu mẫu.");
+        return; // No continuar si la firma está vacía
+    }
+
+
+    // Lista de campos obligatorios (excepto el optativo)
+    var requiredFields = { apartmentCode, owner, phone };
+
+    // Verificar si algún campo obligatorio está vacío
+    for (let field in requiredFields) {
+        if (!requiredFields[field]) {
+            alert("⚠️ Vui lòng điền đầy đủ tất cả các trường bắt buộc trước khi gửi.");
+            return; // No continuar si hay un campo vacío
+        }
+    }
+
+// 🔄 **ACTUALIZAR LISTA DE APARTAMENTOS ANTES DE ENVIAR**
+fetch("https://script.google.com/macros/s/AKfycbwLHbrh3_H1Eb28RRxyHS8dWOd5qGAUHhMDvS_ZP2GXKf7JW_4eBz4gCW-_nD1zX96h/exec")
+    .then(response => response.json())
+    .then(data => {
+        console.log("Datos recibidos:", data);
+
+        // Normaliza los códigos a mayúsculas y sin espacios
+        let apartamentosActualizados = data.map(codigo => codigo?.toString().trim().toUpperCase());
+        console.log("Códigos de apartamentos:", apartamentosActualizados);
+
+        // Normaliza el código ingresado también
+        let codigoNormalizado = apartmentCode?.trim().toUpperCase();
+        console.log("Código ingresado normalizado:", codigoNormalizado);
+
+        // ❌ **Verificar nuevamente si el código ya fue registrado**
+        if (apartamentosActualizados.includes(codigoNormalizado)) {
+            alert("⚠️ Mã căn hộ này đã được đăng ký. Vui lòng liên hệ với chúng tôi qua Zalo hoặc email.");
+            submitButton.disabled = false;
+            return;
+        }
+
+
+            else{
+
+
+    // Deshabilitar el botón para evitar envíos múltiples
+    this.disabled = true;
+
     
             var formData = new FormData();
             formData.append("entry.294998651", apartmentCode);
@@ -361,6 +473,7 @@
             formData.append("entry.1210988443", representative);
             formData.append("entry.486555366", phone);
             formData.append("entry.619634509", signatureUrl);
+            formData.append("entry.793849116", uuid);
     
             fetch("https://docs.google.com/forms/d/e/1FAIpQLSfCVp93vBWB10Pk3zb44QXwmsalXMynRA9S27r5luS4bamLOA/formResponse", {
                 method: "POST",
@@ -372,7 +485,12 @@
             }).catch(() => {
                 console.log("Có lỗi xảy ra khi gửi biểu mẫu. Vui lòng thử lại.");
             });
+
+        }
+
+
         });
+    });
     
         // Función para mostrar el modal
         function showModal() {
@@ -387,6 +505,9 @@
             location.reload();  // Recarga la página
             window.scrollTo(0, 0);  // Desplaza la página hacia la parte superior
         }
+
+
+ 
     </script>
 </body>
 </html>
