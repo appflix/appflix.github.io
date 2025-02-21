@@ -242,7 +242,9 @@ document.getElementById("apartmentCode").disabled = true;
 fetch("https://script.google.com/macros/s/AKfycbwLHbrh3_H1Eb28RRxyHS8dWOd5qGAUHhMDvS_ZP2GXKf7JW_4eBz4gCW-_nD1zX96h/exec")
     .then(response => response.json())
     .then(data => {
-        apartamentosRegistrados = data.map(codigo => codigo.trim().toUpperCase());
+        apartamentosRegistrados = data.map(codigo => codigo?.toString().trim().toUpperCase());
+    
+
         document.getElementById("apartmentCode").disabled = false; // Habilitar después de cargar
     })
     .catch(error => console.error("Error al obtener los códigos:", error));
