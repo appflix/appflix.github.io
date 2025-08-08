@@ -122,12 +122,18 @@
             background-color: #311b92;
         }
      
-            canvas {
-       border: 1px solid black;
-touch-action: none; /* 🔒 evita el scroll o pinch sobre el canvas */
+
 
     }
-
+canvas {
+  width: 100%;               /* Escala visualmente al contenedor */
+  height: auto;
+  aspect-ratio: 5 / 3;       /* Mantiene proporción de firma */
+  border: 1px solid black;
+  touch-action: none;
+  display: block;
+    touch-action: none; /* 🔒 evita el scroll o pinch sobre el canvas */
+}
 
     input[type="checkbox"] {
     width: 18px;
@@ -314,7 +320,7 @@ touch-action: none; /* 🔒 evita el scroll o pinch sobre el canvas */
         </div>
     
 <input id="file" type="file"  style="display: none;"/>
-        <canvas id="sign" width="500" height="300"></canvas>
+        <canvas id="sign"></canvas>
           <br>
           <br>
 
@@ -370,6 +376,21 @@ touch-action: none; /* 🔒 evita el scroll o pinch sobre el canvas */
   var clearButton = document.getElementById('clearButton');
   var fileInput = document.getElementById('file');
   var ctx = canvas.getContext('2d');
+
+function resizeCanvas() {
+  const width = canvas.offsetWidth;
+  const height = width * 0.6; // Aspect ratio 5:3
+
+  canvas.width = width;       // actual size in memory (important for crispness)
+  canvas.height = height;
+}
+
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas(); // inicial
+
+
+
+    
   var pos = { x: 0, y: 0 };
   var drawing = false;
 
