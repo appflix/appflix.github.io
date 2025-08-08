@@ -157,7 +157,10 @@ canvas {
   cursor: pointer;
 }
 
-
+.input.error {
+  border: 2px solid red;
+  background-color: #ffe6e6;
+}
 
     </style>
 </head>
@@ -511,113 +514,69 @@ resizeCanvas(); // inicial
   }
 
 async function send() {
-  const name = document.getElementById("1").value.trim();
-  const birth = document.getElementById("b").value.trim();
-  const mobile = document.getElementById("c").value.trim();
-  const mobile2 = document.getElementById("d").value.trim();
-  const timestamp = document.getElementById("f").value.trim();
-  const consentValue = document.querySelector('input[name="consent"]:checked')?.value || "";
-  const canvas = document.getElementById("signature");
-  const warning = document.getElementById("warning");
+  const nameInput = document.getElementById("name");
+  const birthInput = document.getElementById("birth");
+  const mobileInput = document.getElementById("mobile");
+  const mobile2Input = document.getElementById("mobile2");
+  const timestampInput = document.getElementById("timestamp");
+  const consentInput = document.querySelector('input[name="consent"]:checked');
+  const signatureCanvas = document.getElementById("signature");
 
-  let hasError = false;
-  let firstErrorElement = null;
-  warning.style.display = "none";
+  const name = nameInput.value.trim();
+  const birth = birthInput.value.trim();
+  const mobile = mobileInput.value.trim();
+  const mobile2 = mobile2Input.value.trim();
+  const timestamp = timestampInput.value.trim();
+  const consent = consentInput ? consentInput.value : "";
+  const signatureData = signatureCanvas.toDataURL("image/png");
 
-  // Validaciones con scroll al primero con error
-  if (!name) {
-    const el = document.getElementById("1");
-    el.style.borderColor = "red";
-    hasError = true;
-    if (!firstErrorElement) firstErrorElement = el;
+  // Validación de campos
+  if (!name) return scrollToAndHighlight(nameInput);
+  if (!birth) return scrollToAndHighlight(birthInput);
+  if (!mobile) return scrollToAndHighlight(mobileInput);
+  if (!mobile2) return scrollToAndHighlight(mobile2Input);
+  if (!timestamp) return scrollToAndHighlight(timestampInput);
+  if (!consent) return scrollToAndHighlight(document.querySelector('.consent-section'));
+  if (signatureData === signatureCanvas.toDataURL("image/png", 0)) {
+    alert("Por favor, firme antes de enviar.");
+    return signatureCanvas.scrollIntoView({ behavior: "smooth", block: "center" });
   }
 
-  if (!birth) {
-    const el = document.getElementById("b");
-    el.style.borderColor = "red";
-    hasError = true;
-    if (!firstErrorElement) firstErrorElement = el;
-  }
-
-  if (!mobile) {
-    const el = document.getElementById("c");
-    el.style.borderColor = "red";
-    hasError = true;
-    if (!firstErrorElement) firstErrorElement = el;
-  }
-
-  if (!timestamp) {
-    const el = document.getElementById("f");
-    el.style.borderColor = "red";
-    hasError = true;
-    if (!firstErrorElement) firstErrorElement = el;
-  }
-
-  if (!consentValue) {
-    const el = document.getElementById("consent");
-    el.style.borderColor = "red";
-    hasError = true;
-    if (!firstErrorElement) firstErrorElement = el;
-  }
-
-  // Validar si hay firma
-  const isSignatureEmpty = (() => {
-    const blank = document.createElement("canvas");
-    blank.width = canvas.width;
-    blank.height = canvas.height;
-    return canvas.toDataURL() === blank.toDataURL();
-  })();
-
-  if (isSignatureEmpty) {
-    const el = document.getElementById("2");
-    el.style.borderColor = "red";
-    hasError = true;
-    if (!firstErrorElement) firstErrorElement = el;
-  }
-
-  if (firstErrorElement) {
-    firstErrorElement.scrollIntoView({ behavior: "smooth", block: "center" });
-    warning.style.display = "block";
-  }
-
-  if (hasError) return;
-
-  // Mostrar spinner mientras se envía
   spinnerOverlay.style.display = 'flex';
 
-  // Convertir firma a base64
-  const base64Signature = canvas.toDataURL().split(',')[1];
-
-  const payload = {
-    name,
-    birth,
-    mobile,
-    mobile2,
-    timestamp,
-    consentValue,
-    filename: 'signature.png',
-    mimeType: 'image/png',
-    data: base64Signature
-  };
-
   try {
-    await fetch('https://script.google.com/macros/s/AKfycbzqMRvHKU7BTaRa6lJijOQuMdBgDRZaoJS9Xil_2adwaZNM1-wZhHtToR6mWsqkyjrRnQ/exec', {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify(payload)
+    await fetch("https://script.google.com/macros/s/AKfycbzqMRvHKU7BTaRa6lJijOQuMdBgDRZaoJS9Xil_2adwaZNM1-wZhHtToR6mWsqkyjrRnQ/exec", {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({
+        filename: "signature.png",
+        mimeType: "image/png",
+        data: signatureData.split(",")[1],
+        name,
+        birth,
+        mobile,
+        mobile2,
+        timestamp,
+        consent
+      })
     });
 
-    // Mostrar mensaje de éxito
-    document.getElementById("form").style.display = "none";
-    document.getElementById("success").style.display = "block";
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-
-  } catch (err) {
-    console.error("Error al enviar:", err);
-    alert("Ocurrió un error al enviar el formulario.");
+    alert("Formulario enviado correctamente.");
+    location.reload();
+  } catch (error) {
+    console.error("Error al enviar:", error);
+    alert("Hubo un error al enviar el formulario.");
   } finally {
     spinnerOverlay.style.display = 'none';
   }
+}
+
+// Función para resaltar y hacer scroll al campo vacío
+function scrollToAndHighlight(el) {
+  el.scrollIntoView({ behavior: "smooth", block: "center" });
+  el.focus();
+  el.classList.add("error");
+  setTimeout(() => el.classList.remove("error"), 2000);
 }
 
 
