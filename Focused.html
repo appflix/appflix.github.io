@@ -377,13 +377,21 @@ canvas {
   var fileInput = document.getElementById('file');
   var ctx = canvas.getContext('2d');
 
-function resizeCanvas() {
-  const width = canvas.offsetWidth;
-  const height = width * 0.6; // Aspect ratio 5:3
+let signatureCaptured = false;
 
-  canvas.width = width;       // actual size in memory (important for crispness)
+canvas.addEventListener('mousedown', () => signatureCaptured = true);
+canvas.addEventListener('touchstart', () => signatureCaptured = true);
+
+// Evitar resize si ya hay firma
+function resizeCanvas() {
+  if (signatureCaptured) return;
+
+  const width = canvas.offsetWidth;
+  const height = width * 0.6;
+  canvas.width = width;
   canvas.height = height;
 }
+
 
 window.addEventListener('resize', resizeCanvas);
 resizeCanvas(); // inicial
