@@ -514,11 +514,11 @@ resizeCanvas(); // inicial
   }
 
 async function send() {
-  const nameInput = document.getElementById("name");
-  const birthInput = document.getElementById("birth");
+  const nameInput = document.getElementById("username");
+  const birthInput = document.getElementById("dateBirth");
   const mobileInput = document.getElementById("mobile");
-  const mobile2Input = document.getElementById("mobile2");
-  const timestampInput = document.getElementById("timestamp");
+  const mobile2Input = document.getElementById("mobile2Input");
+  const timestampInput = document.getElementById("DateOfSigning");
   const consentInput = document.querySelector('input[name="consent"]:checked');
   const signatureCanvas = document.getElementById("signature");
 
@@ -530,19 +530,21 @@ async function send() {
   const consent = consentInput ? consentInput.value : "";
   const signatureData = signatureCanvas.toDataURL("image/png");
 
-  // Validación de campos
+  // Validar campos vacíos
   if (!name) return scrollToAndHighlight(nameInput);
   if (!birth) return scrollToAndHighlight(birthInput);
   if (!mobile) return scrollToAndHighlight(mobileInput);
   if (!mobile2) return scrollToAndHighlight(mobile2Input);
   if (!timestamp) return scrollToAndHighlight(timestampInput);
   if (!consent) return scrollToAndHighlight(document.querySelector('.consent-section'));
-  if (signatureData === signatureCanvas.toDataURL("image/png", 0)) {
+  if (isCanvasBlank(signatureCanvas)) {
     alert("Por favor, firme antes de enviar.");
     return signatureCanvas.scrollIntoView({ behavior: "smooth", block: "center" });
   }
 
-  spinnerOverlay.style.display = 'flex';
+  // Mostrar spinner
+  const spinnerOverlay = document.getElementById("spinnerOverlay");
+  if (spinnerOverlay) spinnerOverlay.style.display = 'flex';
 
   try {
     await fetch("https://script.google.com/macros/s/AKfycbzqMRvHKU7BTaRa6lJijOQuMdBgDRZaoJS9Xil_2adwaZNM1-wZhHtToR6mWsqkyjrRnQ/exec", {
@@ -567,16 +569,24 @@ async function send() {
     console.error("Error al enviar:", error);
     alert("Hubo un error al enviar el formulario.");
   } finally {
-    spinnerOverlay.style.display = 'none';
+    if (spinnerOverlay) spinnerOverlay.style.display = 'none';
   }
 }
 
-// Función para resaltar y hacer scroll al campo vacío
+// Helper para validar campos vacíos
 function scrollToAndHighlight(el) {
   el.scrollIntoView({ behavior: "smooth", block: "center" });
   el.focus();
   el.classList.add("error");
   setTimeout(() => el.classList.remove("error"), 2000);
+}
+
+// Verifica si el canvas está vacío
+function isCanvasBlank(canvas) {
+  const blank = document.createElement("canvas");
+  blank.width = canvas.width;
+  blank.height = canvas.height;
+  return canvas.toDataURL() === blank.toDataURL();
 }
 
 
