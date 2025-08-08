@@ -1,217 +1,547 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-  <base target="_top">
-  <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" />
-  <style>
-    body {
-      font-family: 'Roboto', sans-serif;
-      background-color: #f5f5f5;
-      padding: 20px;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap">
+    <style>
+        body {
+          
+            font-family: 'Roboto', sans-serif;
+            background-color: #e7e6fb;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+            flex-direction: column; /* "Adjustment for column orientation" */
+            align-items: center; /* Center the forms horizontally */
+        }
+
+        .form-container {
+            max-width: 600px;
+            width: 100%;
+            background-color: #fff;
+            border: 1px solid #dadce0;
+            border-top: 8px solid #003cff; /* Added: Violet top border. */
+            border-radius: 8px;
+            box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+            padding: 22px;
+            margin-bottom: 20px; /* Adjustment to add space between forms */
+
+
+        }
+
+        .form-container2 {
+            max-width: 600px;
+            width: 100%;
+            background-color: #fff;
+            border: 1px solid #dadce0;
+            border-radius: 8px;
+            box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+            padding: 32px;
+            margin-bottom: 20px; /* Adjustment to add space between forms. */
+        }
+
+        .form-container3 {
+            max-width: 600px;
+            width: 100%;
+          
+          
+          
+            box-sizing: border-box;
+            padding: 0px;
+            margin-bottom: 20px; /* Adjustment to add space between forms. */
+        }
+
+        .question-container {
+            margin-bottom: 32px;
+        }
+
+        .title {
+            font-size: 32px;
+            font-weight: bold;
+            color: #202124;
+            margin-bottom: 12px;
+        }
+                .subtitle {
+            font-size: 14px;
+            //font-weight: bold;
+            color: #202124;
+            margin-bottom: 12px;
+        }
+        
+                    .warning {
+            font-size: 14px;
+            //font-weight: bold;
+            color: red;
+            margin-bottom: 12px;
+        }
+
+        .question {
+            font-size: 18px;
+            font-weight: bold;
+            color: #202124;
+            margin-bottom: 12px;
+        }
+
+        .input-container {
+            margin-bottom: 24px;
+        }
+
+        input {
+            width: calc(100% - 24px);
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            font-size: 16px;
+            margin-top: 4px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            border-color: #673ab7;
+            outline: none;
+        }
+
+        button {
+            background-color: #003cff;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #311b92;
+        }
+     
+            canvas {
+       border: 1px solid black;
+touch-action: none; /* 🔒 evita el scroll o pinch sobre el canvas */
+
     }
-    .form-container {
-      background: white;
-      padding: 25px;
-      border-radius: 10px;
-      max-width: 600px;
-      margin: auto;
-      box-shadow: 0 0 15px rgba(0,0,0,0.1);
-    }
-    h2 {
-      text-align: center;
-      margin-bottom: 25px;
-      color: #333;
-    }
-    input[type="text"], input[type="tel"], input[type="date"] {
-      width: 100%;
-      padding: 10px;
-      margin: 8px 0 16px;
-      display: inline-block;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      box-sizing: border-box;
-    }
-    label {
-      font-weight: bold;
-      color: #555;
-    }
-    .signature-wrapper {
-      width: 100%;
-      max-width: 100%;
-      box-sizing: border-box;
-      border: 1px solid black;
-      margin-bottom: 15px;
-    }
-    canvas {
-      width: 100%;
-      height: auto;
-      aspect-ratio: 5 / 3;
-      touch-action: none;
-      display: block;
-    }
-    .form-container2 {
-      margin-top: 25px;
-      padding: 15px;
-      border-top: 1px solid #ddd;
-    }
-    button {
-      background-color: #4CAF50;
-      color: white;
-      padding: 10px 20px;
-      margin-top: 10px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      width: 100%;
-      font-size: 16px;
-    }
-    button:hover {
-      background-color: #45a049;
-    }
-    .hidden {
-      display: none;
-    }
-  </style>
+
+
+    input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin-top: 16px;
+  font-size: 16px;
+}
+
+.radio-group input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  margin-right: 8px;
+  vertical-align: middle;
+  cursor: pointer;
+}
+
+
+
+    </style>
 </head>
-<body>
-  <div class="form-container">
-    <h2>Formulario</h2>
-    <form id="myForm">
-      <label for="name">Nombre completo:</label>
-      <input type="text" id="name" name="name" required />
+<body >
 
-      <label for="birth">Fecha de nacimiento:</label>
-      <input type="date" id="birth" name="birth" required />
 
-      <label for="mobile">Teléfono:</label>
-      <input type="tel" id="mobile" name="mobile" required />
+    <img id="-1" class="form-container2" src="https://i.ibb.co/3f1GNGW/Logo-Focus.jpg" alt="" style="display: none;" >
 
-      <label for="mobile2">Teléfono alternativo (opcional):</label>
-      <input type="tel" id="mobile2" name="mobile2" />
+   
+    <div id="0" class="form-container" style="display: none;" >
+        <div class="question-container">
+            <div class="title" id="title">TEXT MESSAGING SERVICE AGREEMENT</div>
+             <div id="e">
 
-      <label for="consent">Consentimiento:</label>
-      <input type="checkbox" id="consent" name="consent" required />
-      <span>Acepto términos y condiciones</span>
+            
 
-      <label for="sign">Firma:</label>
-      <div class="signature-wrapper">
-        <canvas id="sign"></canvas>
-      </div>
-      <button type="button" onclick="clearCanvas()">Limpiar firma</button>
+    <p><strong>Patient Focused Neurology</strong> offers an optional SMS messaging service to help you manage your care. <strong>By enrolling, you agree to receive text messages regarding:</strong></p>
 
-      <div class="form-container2">
-        <button type="submit">Enviar</button>
-      </div>
-    </form>
+    <ul>
+        <li>Appointment confirmations and reminders</li>
+        <li>Pre-visit instructions and check-in notices</li>
+        <li>Insurance and demographic requests</li>
+        <li>Billing and payment reminders</li>
+        <li>Follow-up care or missed appointments</li>
+    </ul>
 
-    <div id="ty" class="hidden">
-      <h3>¡Gracias por enviar el formulario!</h3>
+    <p><strong>Consent & Privacy:</strong> We will not send you text messages without your explicit consent. Your mobile number and SMS consent will not be shared with any third parties or affiliates for marketing purposes. Messages are not encrypted, and anyone with access to your phone or mobile service may be able to view them.</p>
+
+    <p><strong>Message Frequency & Fees:</strong> Message frequency may vary depending on your care needs. You may receive up to 2–4 messages per week. Message and data rates may apply based on your mobile plan.</p>
+
+</div>
+
+<div class="subtitle" id="ty" style="display: none;">
+    Your response has been recorded
+    <br><br>
+    <button onclick="reloadApp();" style="background: none; color: blue; border: none; text-decoration: underline; cursor: pointer; padding: 0;">
+        Back to Form
+    </button>
+</div>
+
+        </div>
+
+    </div>
+
+
+
+
+
+<div id="consent" class="form-container2" style="display: none;">
+  <div class="question-container">
+    <p style="font-weight: bold;">
+      I consent to receive text messages from PFN. I understand this is optional and that I can reply STOP at any time to unsubscribe.
+    </p>
+
+    <div class="radio-group">
+      <label>
+        <input type="radio" id="consentYes" name="smsConsent" value="yes"> Yes
+      </label><br>
+      <label>
+        <input type="radio" id="consentNo" name="smsConsent" value="no"> No
+      </label>
     </div>
   </div>
 
-  <script>
-    const canvas = document.getElementById('sign');
-    const ctx = canvas.getContext('2d');
-    let drawing = false;
+  <div class="warning" id="warningConsent" style="display: none; color: red; margin-top: 8px;">
+    You must check the box to continue.
+  </div>
+</div>
 
-    function resizeCanvas() {
-      const ratio = 3 / 2;
-      const width = canvas.clientWidth;
-      const height = width / ratio;
-      canvas.width = width;
-      canvas.height = height;
+
+
+
+
+
+    <div id="1" class="form-container2" style="display: none;">
+        <div class="question-container">
+            <div class="question">Patient's Name (last, first):</div>
+            
+        </div>
+
+        <div class="input-container">
+            <input type="text" id="username" name="username" placeholder="Enter your name">
+        </div>
+
+        <div class="warning" id="warning"style="display: none;">This is a required field</div>
+
+ 
+    </div>
+
+
+
+
+    <div id="b" class="form-container2" style="display: none;">
+        <div class="question-container">
+            <div class="question">Patient's date of birth:</div>
+            
+        </div>
+
+        <div class="input-container">
+            <input type="date" id="dateBirth" name="dateBirth" placeholder="Enter your date of birth">
+        </div>
+
+        <div class="warning" id="warning2"style="display: none;">This is a required field</div>
+
+ 
+    </div>
+
+    <div id="c" class="form-container2" style="display: none;">
+        <div class="question-container">
+            <div class="question">Mobile number 1: (XXX-XXX-XXXX)</div>
+            
+        </div>
+
+        <div class="input-container">
+            <input type="text" id="mobile" name="mobile" placeholder="Enter your Mobile number">
+        </div>
+
+        <div class="warning" id="warning3"style="display: none;">This is a required field</div>
+
+ 
+    </div>
+
+
+
+    <div id="mobile2" class="form-container2" style="display: none;">
+        <div class="question-container">
+            <div class="question">Mobile number 2: (XXX-XXX-XXXX)</div>
+            
+        </div>
+
+        <div class="input-container">
+            <input type="text" id="mobile2Input" name="mobile2" placeholder="Enter a second Mobile number (optional)">
+
+        </div>
+
+        <div class="warning" id="warning3"style="display: none;">This is a required field</div>
+
+ 
+    </div>
+
+
+
+
+
+
+    <div id="2" class="form-container2" style="display: none;">
+        <div class="question-container">
+      <p>
+      <strong><u>By signing  the box below</u></strong>, you consent to receive SMS messages from Patient Focused Neurology regarding appointment reminders and confirmations, insurance information requests, billing reminders, missed appointment follow-ups, and insurance inactivity.
+    </p>
+
+    <p>
+      You may opt out at any time by replying “STOP.” Message and data rates may apply. Message frequency may vary. For assistance, text HELP to 805-579-9990.
+      For more information, please review our Privacy Policy at
+      <a href="https://www.pfneurology.com/privacy-policy" target="_blank" rel="noopener noreferrer">www.pfneurology.com/privacy-policy</a>.
+    </p>
+            <div id="question" class="question">
+
+            </div>
+        </div>
+    
+<input id="file" type="file"  style="display: none;"/>
+        <canvas id="sign" width="500" height="300"></canvas>
+          <br>
+          <br>
+
+        <button type="button" id="clearButton">Erase</button>
+ <div class="warning" id="warning4"style="display: none;">This is a required field</div>
+
+    </div>
+
+    <div id="f" class="form-container2" style="display: none;">
+        <div class="question-container">
+            <div class="question">Date of signing</div>
+            
+        </div>
+
+        <div class="input-container">
+            <input type="date" id="DateOfSigning" name="DateOfSigning" placeholder="Enter today's date">
+        </div>
+
+        <div class="warning" id="warning5"style="display: none;">This is a required field</div>
+
+ 
+    </div>
+
+
+
+
+
+    <div class="form-container3">
+
+        <button type="button" id="submit" onclick="send()" style="display: none;">Submit</button>
+    </div>
+
+   
+
+   
+
+<script>
+  function reloadApp() {
+    google.script.run
+      .withSuccessHandler(function(url) {
+        window.open(url, '_top');
+      })
+      .getScriptURL();
+  }
+
+  const visibleIds = ["-1", "0", "1", "b", "c", "2", "f", "mobile2", "consent", "submit"];
+  visibleIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = "block";
+  });
+
+  var canvas = document.querySelector('canvas');
+  var clearButton = document.getElementById('clearButton');
+  var fileInput = document.getElementById('file');
+  var ctx = canvas.getContext('2d');
+  var pos = { x: 0, y: 0 };
+  var drawing = false;
+
+  // 🖱 Eventos ratón
+  canvas.addEventListener('mousedown', (e) => {
+    drawing = true;
+    setPosition(e);
+  });
+  canvas.addEventListener('mouseup', () => drawing = false);
+  canvas.addEventListener('mousemove', draw);
+
+  // 📱 Eventos táctiles (iPhone / iPad)
+  canvas.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    drawing = true;
+    setPosition(e);
+  }, { passive: false });
+
+  canvas.addEventListener('touchend', () => {
+    drawing = false;
+  }, { passive: false });
+
+  canvas.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+    if (!drawing) return;
+    draw(e);
+  }, { passive: false });
+
+  clearButton.addEventListener('click', clearCanvas);
+
+  function setPosition(e) {
+    var rect = canvas.getBoundingClientRect();
+    if (e.touches) {
+      pos.x = e.touches[0].clientX - rect.left;
+      pos.y = e.touches[0].clientY - rect.top;
+    } else {
+      pos.x = e.clientX - rect.left;
+      pos.y = e.clientY - rect.top;
     }
+  }
 
-    resizeCanvas();
-    window.addEventListener("resize", resizeCanvas);
+  function draw(e) {
+    if (!drawing && !e.touches) return;
 
-    function getPosition(e) {
-      const rect = canvas.getBoundingClientRect();
-      return {
-        x: e.clientX - rect.left,
-        y: e.clientY - rect.top
+    ctx.beginPath();
+    ctx.lineWidth = 5;
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = 'black';
+
+    ctx.moveTo(pos.x, pos.y);
+    setPosition(e);
+    ctx.lineTo(pos.x, pos.y);
+    ctx.stroke();
+  }
+
+  function clearCanvas() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+
+  function saveFile(f, cual) {
+    let name = document.getElementById("username").value;
+    const file = f.files[0];
+    const fr = new FileReader();
+
+    fr.onload = function(e) {
+      const obj = {
+        filename: cual + " " + name,
+        mimeType: file.type,
+        bytes: [...new Int8Array(e.target.result)]
       };
+      google.script.run.withSuccessHandler(data => {
+        // Opcional: manejar respuesta
+      }).saveFile(obj, name);
     }
 
-    canvas.addEventListener("mousedown", function(e) {
-      drawing = true;
-      const pos = getPosition(e);
-      ctx.beginPath();
-      ctx.moveTo(pos.x, pos.y);
-    });
+    fr.readAsArrayBuffer(file);
+    return cual;
+  }
 
-    canvas.addEventListener("mousemove", function(e) {
-      if (!drawing) return;
-      const pos = getPosition(e);
-      ctx.lineTo(pos.x, pos.y);
-      ctx.stroke();
-    });
+  function send() {
+    let name = document.getElementById("username").value;
+    let birth = document.getElementById("dateBirth").value;
+    let mobile = document.getElementById("mobile").value;
+    let timestamp = document.getElementById("DateOfSigning").value;
+    let mobile2 = document.getElementById("mobile2Input").value;
 
-    canvas.addEventListener("mouseup", function(e) {
-      drawing = false;
-    });
+    let hasError = false;
 
-    canvas.addEventListener("touchstart", function(e) {
-      e.preventDefault();
-      drawing = true;
-      const touch = e.touches[0];
-      const pos = getPosition(touch);
-      ctx.beginPath();
-      ctx.moveTo(pos.x, pos.y);
-    });
-
-    canvas.addEventListener("touchmove", function(e) {
-      e.preventDefault();
-      if (!drawing) return;
-      const touch = e.touches[0];
-      const pos = getPosition(touch);
-      ctx.lineTo(pos.x, pos.y);
-      ctx.stroke();
-    });
-
-    canvas.addEventListener("touchend", function(e) {
-      e.preventDefault();
-      drawing = false;
-    });
-
-    function clearCanvas() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (!name) {
+      document.getElementById("1").style.borderColor = "red";
+      document.getElementById("warning").style.display = "block";
+      hasError = true;
+    } else {
+      document.getElementById("1").style.borderColor = "";
+      document.getElementById("warning").style.display = "none";
     }
 
-    document.getElementById("myForm").addEventListener("submit", function(e) {
-      e.preventDefault();
+    if (!birth) {
+      document.getElementById("b").style.borderColor = "red";
+      document.getElementById("warning2").style.display = "block";
+      hasError = true;
+    } else {
+      document.getElementById("b").style.borderColor = "";
+      document.getElementById("warning2").style.display = "none";
+    }
 
-      const name = document.getElementById("name").value;
-      const birth = document.getElementById("birth").value;
-      const mobile = document.getElementById("mobile").value;
-      const mobile2 = document.getElementById("mobile2").value;
-      const consent = document.getElementById("consent").checked;
+    if (!mobile) {
+      document.getElementById("c").style.borderColor = "red";
+      document.getElementById("warning3").style.display = "block";
+      hasError = true;
+    } else {
+      document.getElementById("c").style.borderColor = "";
+      document.getElementById("warning3").style.display = "none";
+    }
 
-      if (!name || !birth || !mobile || !consent) {
-        alert("Por favor, completa todos los campos obligatorios.");
-        return;
-      }
+    if (!timestamp) {
+      document.getElementById("f").style.borderColor = "red";
+      document.getElementById("warning5").style.display = "block";
+      hasError = true;
+    } else {
+      document.getElementById("f").style.borderColor = "";
+      document.getElementById("warning5").style.display = "none";
+    }
 
-      canvas.toBlob(function(blob) {
-        const file = new File([blob], "signature.png", { type: "image/png" });
-        const dt = new DataTransfer();
-        dt.items.add(file);
-        const signatureFile = dt.files[0];
+    const consentYes = document.getElementById("consentYes").checked;
+    const consentNo = document.getElementById("consentNo").checked;
 
-        const reader = new FileReader();
-        reader.onloadend = function () {
-          const base64String = reader.result.replace(/^data:.+;base64,/, '');
-          google.script.run
-            .withSuccessHandler(function() {
-              document.getElementById("myForm").reset();
-              clearCanvas();
-              document.getElementById("ty").style.display = "block";
-            })
-            .answer(name, birth, mobile, mobile2, new Date().toLocaleString(), consent, base64String);
-        };
-        reader.readAsDataURL(signatureFile);
-      });
+    if (!consentYes && !consentNo) {
+      document.getElementById("consent").style.borderColor = "red";
+      document.getElementById("warningConsent").style.display = "block";
+      hasError = true;
+    } else {
+      document.getElementById("consent").style.borderColor = "";
+      document.getElementById("warningConsent").style.display = "none";
+    }
+
+    const consentValue = consentYes ? "Yes" : "No";
+
+    var isCanvasEmpty = ctx.getImageData(0, 0, canvas.width, canvas.height).data.every(function(value) {
+      return value === 0;
     });
-  </script>
+
+    if (isCanvasEmpty) {
+      document.getElementById("2").style.borderColor = "red";
+      document.getElementById("warning4").style.display = "block";
+      hasError = true;
+    } else {
+      document.getElementById("2").style.borderColor = "";
+      document.getElementById("warning4").style.display = "none";
+    }
+
+    if (hasError) return;
+
+    canvas.toBlob(function(blob) {
+      const file = new File([blob], "signature.png", { type: "image/png" });
+      const dataTransfer = new DataTransfer();
+      dataTransfer.items.add(file);
+      fileInput.files = dataTransfer.files;
+      saveFile(fileInput, 'signature ' + name);
+    });
+
+    google.script.run.answer(name, birth, mobile, mobile2, timestamp, consentValue);
+
+    const hideIds = ["1", "b", "c", "e", "2", "f", "mobile2", "consent", "submit"];
+    hideIds.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = "none";
+    });
+
+    document.getElementById("ty").style.display = "block";
+  }
+</script>
+
 </body>
 </html>
