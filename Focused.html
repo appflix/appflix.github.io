@@ -402,16 +402,16 @@ function reloadApp() {
   location.reload(); // recarga la misma página
 }
 
-  const visibleIds = ["-1", "0", "1", "b", "c", "2", "f", "mobile2", "consent", "submit"];
-  visibleIds.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.style.display = "block";
-  });
+const visibleIds = ["-1", "0", "1", "b", "c", "2", "f", "mobile2", "consent", "submit"];
+visibleIds.forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.style.display = "block";
+});
 
-  var canvas = document.querySelector('canvas');
-  var clearButton = document.getElementById('clearButton');
-  var fileInput = document.getElementById('file');
-  var ctx = canvas.getContext('2d');
+var canvas = document.querySelector('canvas');
+var clearButton = document.getElementById('clearButton');
+var fileInput = document.getElementById('file');
+var ctx = canvas.getContext('2d');
 
 let signatureCaptured = false;
 
@@ -428,100 +428,92 @@ function resizeCanvas() {
   canvas.height = height;
 }
 
-
 window.addEventListener('resize', resizeCanvas);
 resizeCanvas(); // inicial
 
+var pos = { x: 0, y: 0 };
+var drawing = false;
 
+// 🖱 Eventos ratón
+canvas.addEventListener('mousedown', (e) => {
+  drawing = true;
+  setPosition(e);
+});
+canvas.addEventListener('mouseup', () => drawing = false);
+canvas.addEventListener('mousemove', draw);
 
-    
-  var pos = { x: 0, y: 0 };
-  var drawing = false;
+// 📱 Eventos táctiles (iPhone / iPad)
+canvas.addEventListener('touchstart', (e) => {
+  e.preventDefault();
+  drawing = true;
+  setPosition(e);
+}, { passive: false });
 
-  // 🖱 Eventos ratón
-  canvas.addEventListener('mousedown', (e) => {
-    drawing = true;
-    setPosition(e);
-  });
-  canvas.addEventListener('mouseup', () => drawing = false);
-  canvas.addEventListener('mousemove', draw);
+canvas.addEventListener('touchend', () => {
+  drawing = false;
+}, { passive: false });
 
-  // 📱 Eventos táctiles (iPhone / iPad)
-  canvas.addEventListener('touchstart', (e) => {
-    e.preventDefault();
-    drawing = true;
-    setPosition(e);
-  }, { passive: false });
+canvas.addEventListener('touchmove', (e) => {
+  e.preventDefault();
+  if (!drawing) return;
+  draw(e);
+}, { passive: false });
 
-  canvas.addEventListener('touchend', () => {
-    drawing = false;
-  }, { passive: false });
+clearButton.addEventListener('click', clearCanvas);
 
-  canvas.addEventListener('touchmove', (e) => {
-    e.preventDefault();
-    if (!drawing) return;
-    draw(e);
-  }, { passive: false });
+function setPosition(e) {
+  var rect = canvas.getBoundingClientRect();
+  if (e.touches) {
+    pos.x = e.touches[0].clientX - rect.left;
+    pos.y = e.touches[0].clientY - rect.top;
+  } else {
+    pos.x = e.clientX - rect.left;
+    pos.y = e.clientY - rect.top;
+  }
+}
 
-  clearButton.addEventListener('click', clearCanvas);
+function draw(e) {
+  if (!drawing && !e.touches) return;
 
-  function setPosition(e) {
-    var rect = canvas.getBoundingClientRect();
-    if (e.touches) {
-      pos.x = e.touches[0].clientX - rect.left;
-      pos.y = e.touches[0].clientY - rect.top;
-    } else {
-      pos.x = e.clientX - rect.left;
-      pos.y = e.clientY - rect.top;
-    }
+  ctx.beginPath();
+  ctx.lineWidth = 5;
+  ctx.lineCap = 'round';
+  ctx.strokeStyle = 'black';
+
+  ctx.moveTo(pos.x, pos.y);
+  setPosition(e);
+  ctx.lineTo(pos.x, pos.y);
+  ctx.stroke();
+}
+
+function clearCanvas() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+function saveFile(f, cual) {
+  let name = document.getElementById("username").value;
+  const file = f.files[0];
+  const fr = new FileReader();
+
+  fr.onload = function(e) {
+    const obj = {
+      filename: cual + " " + name,
+      mimeType: file.type,
+      bytes: [...new Int8Array(e.target.result)]
+    };
+    google.script.run.withSuccessHandler(data => {
+      // Opcional: manejar respuesta
+    }).saveFile(obj, name);
   }
 
-  function draw(e) {
-    if (!drawing && !e.touches) return;
-
-    ctx.beginPath();
-    ctx.lineWidth = 5;
-    ctx.lineCap = 'round';
-    ctx.strokeStyle = 'black';
-
-    ctx.moveTo(pos.x, pos.y);
-    setPosition(e);
-    ctx.lineTo(pos.x, pos.y);
-    ctx.stroke();
-  }
-
-  function clearCanvas() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-  }
-
-  function saveFile(f, cual) {
-    let name = document.getElementById("username").value;
-    const file = f.files[0];
-    const fr = new FileReader();
-
-    fr.onload = function(e) {
-      const obj = {
-        filename: cual + " " + name,
-        mimeType: file.type,
-        bytes: [...new Int8Array(e.target.result)]
-      };
-      google.script.run.withSuccessHandler(data => {
-        // Opcional: manejar respuesta
-      }).saveFile(obj, name);
-    }
-
-    fr.readAsArrayBuffer(file);
-    return cual;
-  }
-
-
-
+  fr.readAsArrayBuffer(file);
+  return cual;
+}
 
 async function send() {
   const submitBtn = document.getElementById("submit");
   const overlay = document.getElementById("loadingOverlay");
 
-  // Mostrar overlay y desactivar botón
   submitBtn.disabled = true;
   overlay.style.display = "flex";
 
@@ -532,11 +524,13 @@ async function send() {
   const timestamp = document.getElementById("DateOfSigning").value;
 
   let hasError = false;
+  let firstErrorElement = null;
 
   if (!name) {
     document.getElementById("1").style.borderColor = "red";
     document.getElementById("warning").style.display = "block";
     hasError = true;
+    if (!firstErrorElement) firstErrorElement = document.getElementById("1");
   } else {
     document.getElementById("1").style.borderColor = "";
     document.getElementById("warning").style.display = "none";
@@ -546,6 +540,7 @@ async function send() {
     document.getElementById("b").style.borderColor = "red";
     document.getElementById("warning2").style.display = "block";
     hasError = true;
+    if (!firstErrorElement) firstErrorElement = document.getElementById("b");
   } else {
     document.getElementById("b").style.borderColor = "";
     document.getElementById("warning2").style.display = "none";
@@ -555,6 +550,7 @@ async function send() {
     document.getElementById("c").style.borderColor = "red";
     document.getElementById("warning3").style.display = "block";
     hasError = true;
+    if (!firstErrorElement) firstErrorElement = document.getElementById("c");
   } else {
     document.getElementById("c").style.borderColor = "";
     document.getElementById("warning3").style.display = "none";
@@ -564,6 +560,7 @@ async function send() {
     document.getElementById("f").style.borderColor = "red";
     document.getElementById("warning5").style.display = "block";
     hasError = true;
+    if (!firstErrorElement) firstErrorElement = document.getElementById("f");
   } else {
     document.getElementById("f").style.borderColor = "";
     document.getElementById("warning5").style.display = "none";
@@ -576,6 +573,7 @@ async function send() {
     document.getElementById("consent").style.borderColor = "red";
     document.getElementById("warningConsent").style.display = "block";
     hasError = true;
+    if (!firstErrorElement) firstErrorElement = document.getElementById("consent");
   } else {
     document.getElementById("consent").style.borderColor = "";
     document.getElementById("warningConsent").style.display = "none";
@@ -591,12 +589,16 @@ async function send() {
     document.getElementById("2").style.borderColor = "red";
     document.getElementById("warning4").style.display = "block";
     hasError = true;
+    if (!firstErrorElement) firstErrorElement = document.getElementById("2");
   } else {
     document.getElementById("2").style.borderColor = "";
     document.getElementById("warning4").style.display = "none";
   }
 
   if (hasError) {
+    if (firstErrorElement) {
+      firstErrorElement.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
     submitBtn.disabled = false;
     overlay.style.display = "none";
     return;
@@ -640,10 +642,8 @@ async function send() {
     overlay.style.display = "none";
   }
 }
-
-
-
 </script>
+
 
 </body>
 </html>
