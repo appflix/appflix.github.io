@@ -561,11 +561,9 @@ async function send() {
 
   try {
     await fetch("https://script.google.com/macros/s/AKfycbw7V7pI0sko_5Cr0p1H7ZvFntm2USUKlyB_ynQrEGFWCr4VNXXGtgO87LkfnTsV6pezYQ/exec", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(payload)
+  method: 'POST',
+  headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+  body: JSON.stringify(payload)
     });
 
     // Ocultar formularios y mostrar mensaje final
