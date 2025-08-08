@@ -164,6 +164,38 @@ canvas {
 <body >
 
 
+<div id="spinnerOverlay" style="
+  display: none;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background-color: rgba(255, 255, 255, 0.8);
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+">
+  <div style="
+    border: 8px solid #f3f3f3;
+    border-top: 8px solid #3498db;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 1s linear infinite;
+  "></div>
+  <p style="margin-top: 10px; font-weight: bold; color: #333;">Enviando...</p>
+</div>
+
+<style>
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+</style>
+
+
+
+    
     <img id="-1" class="form-container2" src="https://i.ibb.co/3f1GNGW/Logo-Focus.jpg" alt="" style="display: none;" >
 
    
@@ -479,114 +511,115 @@ resizeCanvas(); // inicial
   }
 
 async function send() {
-  let name = document.getElementById("username").value;
-  let birth = document.getElementById("dateBirth").value;
-  let mobile = document.getElementById("mobile").value;
-  let mobile2 = document.getElementById("mobile2Input").value;
-  let timestamp = document.getElementById("DateOfSigning").value;
+  const name = document.getElementById("1").value.trim();
+  const birth = document.getElementById("b").value.trim();
+  const mobile = document.getElementById("c").value.trim();
+  const mobile2 = document.getElementById("d").value.trim();
+  const timestamp = document.getElementById("f").value.trim();
+  const consentValue = document.querySelector('input[name="consent"]:checked')?.value || "";
+  const canvas = document.getElementById("signature");
+  const warning = document.getElementById("warning");
 
   let hasError = false;
+  let firstErrorElement = null;
+  warning.style.display = "none";
 
+  // Validaciones con scroll al primero con error
   if (!name) {
-    document.getElementById("1").style.borderColor = "red";
-    document.getElementById("warning").style.display = "block";
+    const el = document.getElementById("1");
+    el.style.borderColor = "red";
     hasError = true;
-  } else {
-    document.getElementById("1").style.borderColor = "";
-    document.getElementById("warning").style.display = "none";
+    if (!firstErrorElement) firstErrorElement = el;
   }
 
   if (!birth) {
-    document.getElementById("b").style.borderColor = "red";
-    document.getElementById("warning2").style.display = "block";
+    const el = document.getElementById("b");
+    el.style.borderColor = "red";
     hasError = true;
-  } else {
-    document.getElementById("b").style.borderColor = "";
-    document.getElementById("warning2").style.display = "none";
+    if (!firstErrorElement) firstErrorElement = el;
   }
 
   if (!mobile) {
-    document.getElementById("c").style.borderColor = "red";
-    document.getElementById("warning3").style.display = "block";
+    const el = document.getElementById("c");
+    el.style.borderColor = "red";
     hasError = true;
-  } else {
-    document.getElementById("c").style.borderColor = "";
-    document.getElementById("warning3").style.display = "none";
+    if (!firstErrorElement) firstErrorElement = el;
   }
 
   if (!timestamp) {
-    document.getElementById("f").style.borderColor = "red";
-    document.getElementById("warning5").style.display = "block";
+    const el = document.getElementById("f");
+    el.style.borderColor = "red";
     hasError = true;
-  } else {
-    document.getElementById("f").style.borderColor = "";
-    document.getElementById("warning5").style.display = "none";
+    if (!firstErrorElement) firstErrorElement = el;
   }
 
-  const consentYes = document.getElementById("consentYes").checked;
-  const consentNo = document.getElementById("consentNo").checked;
-
-  if (!consentYes && !consentNo) {
-    document.getElementById("consent").style.borderColor = "red";
-    document.getElementById("warningConsent").style.display = "block";
+  if (!consentValue) {
+    const el = document.getElementById("consent");
+    el.style.borderColor = "red";
     hasError = true;
-  } else {
-    document.getElementById("consent").style.borderColor = "";
-    document.getElementById("warningConsent").style.display = "none";
+    if (!firstErrorElement) firstErrorElement = el;
   }
 
-  const consentValue = consentYes ? "Yes" : "No";
+  // Validar si hay firma
+  const isSignatureEmpty = (() => {
+    const blank = document.createElement("canvas");
+    blank.width = canvas.width;
+    blank.height = canvas.height;
+    return canvas.toDataURL() === blank.toDataURL();
+  })();
 
-  var isCanvasEmpty = ctx.getImageData(0, 0, canvas.width, canvas.height).data.every(value => value === 0);
-  if (isCanvasEmpty) {
-    document.getElementById("2").style.borderColor = "red";
-    document.getElementById("warning4").style.display = "block";
+  if (isSignatureEmpty) {
+    const el = document.getElementById("2");
+    el.style.borderColor = "red";
     hasError = true;
-  } else {
-    document.getElementById("2").style.borderColor = "";
-    document.getElementById("warning4").style.display = "none";
+    if (!firstErrorElement) firstErrorElement = el;
+  }
+
+  if (firstErrorElement) {
+    firstErrorElement.scrollIntoView({ behavior: "smooth", block: "center" });
+    warning.style.display = "block";
   }
 
   if (hasError) return;
 
-  // Convertir canvas a base64
-  const signatureBase64 = canvas.toDataURL("image/png").split(',')[1];
+  // Mostrar spinner mientras se envía
+  spinnerOverlay.style.display = 'flex';
 
-  // Preparar datos
+  // Convertir firma a base64
+  const base64Signature = canvas.toDataURL().split(',')[1];
+
   const payload = {
     name,
     birth,
     mobile,
     mobile2,
     timestamp,
-    consent: consentValue,
-    signature: {
-      filename: `signature_${name}.png`,
-      mimeType: "image/png",
-      data: signatureBase64
-    }
+    consentValue,
+    filename: 'signature.png',
+    mimeType: 'image/png',
+    data: base64Signature
   };
 
   try {
-    await fetch("https://script.google.com/macros/s/AKfycbzqMRvHKU7BTaRa6lJijOQuMdBgDRZaoJS9Xil_2adwaZNM1-wZhHtToR6mWsqkyjrRnQ/exec", {
-  method: 'POST',
-  headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-  body: JSON.stringify(payload)
+    await fetch('https://script.google.com/macros/s/AKfycbzqMRvHKU7BTaRa6lJijOQuMdBgDRZaoJS9Xil_2adwaZNM1-wZhHtToR6mWsqkyjrRnQ/exec', {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
     });
 
-    // Ocultar formularios y mostrar mensaje final
-    const hideIds = ["1", "b", "c", "e", "2", "f", "mobile2", "consent", "submit"];
-    hideIds.forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.style.display = "none";
-    });
+    // Mostrar mensaje de éxito
+    document.getElementById("form").style.display = "none";
+    document.getElementById("success").style.display = "block";
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 
-    document.getElementById("ty").style.display = "block";
   } catch (err) {
-    console.error("Error al enviar datos:", err);
-    alert("Hubo un error al enviar el formulario. Intente de nuevo.");
+    console.error("Error al enviar:", err);
+    alert("Ocurrió un error al enviar el formulario.");
+  } finally {
+    spinnerOverlay.style.display = 'none';
   }
 }
+
 
 </script>
 
