@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -68,14 +69,14 @@
         }
                 .subtitle {
             font-size: 14px;
-            //font-weight: bold;
+            font-weight: bold;
             color: #202124;
             margin-bottom: 12px;
         }
         
                     .warning {
             font-size: 14px;
-            //font-weight: bold;
+            font-weight: bold;
             color: red;
             margin-bottom: 12px;
         }
@@ -157,48 +158,47 @@ canvas {
   cursor: pointer;
 }
 
-.input.error {
-  border: 2px solid red;
-  background-color: #ffe6e6;
+#loadingOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(255, 255, 255, 0.8);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
 }
+
+.spinner {
+  border: 6px solid #ccc;
+  border-top: 6px solid #003cff;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 1s linear infinite;
+}
+
+.loading-text {
+  margin-top: 16px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #003cff;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 
     </style>
 </head>
 <body >
 
 
-<div id="spinnerOverlay" style="
-  display: none;
-  position: fixed;
-  top: 0; left: 0;
-  width: 100vw; height: 100vh;
-  background-color: rgba(255, 255, 255, 0.8);
-  z-index: 9999;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-">
-  <div style="
-    border: 8px solid #f3f3f3;
-    border-top: 8px solid #3498db;
-    border-radius: 50%;
-    width: 60px;
-    height: 60px;
-    animation: spin 1s linear infinite;
-  "></div>
-  <p style="margin-top: 10px; font-weight: bold; color: #333;">Enviando...</p>
-</div>
-
-<style>
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-</style>
-
-
-
-    
     <img id="-1" class="form-container2" src="https://i.ibb.co/3f1GNGW/Logo-Focus.jpg" alt="" style="display: none;" >
 
    
@@ -389,17 +389,18 @@ canvas {
     </div>
 
    
-
+<div id="loadingOverlay" style="display: none;">
+  <div class="overlay-content">
+    <div class="spinner"></div>
+    <div class="loading-text">Sending...</div>
+  </div>
+</div>
    
 
 <script>
-  function reloadApp() {
-    google.script.run
-      .withSuccessHandler(function(url) {
-        window.open(url, '_top');
-      })
-      .getScriptURL();
-  }
+function reloadApp() {
+  location.reload(); // recarga la misma página
+}
 
   const visibleIds = ["-1", "0", "1", "b", "c", "2", "f", "mobile2", "consent", "submit"];
   visibleIds.forEach(id => {
@@ -513,81 +514,133 @@ resizeCanvas(); // inicial
     return cual;
   }
 
+
+
+
 async function send() {
-  const nameInput = document.getElementById("username");
-  const birthInput = document.getElementById("dateBirth");
-  const mobileInput = document.getElementById("mobile");
-  const mobile2Input = document.getElementById("mobile2Input");
-  const timestampInput = document.getElementById("DateOfSigning");
-  const consentInput = document.querySelector('input[name="consent"]:checked');
-  const signatureCanvas = document.getElementById("signature");
+  const submitBtn = document.getElementById("submit");
+  const overlay = document.getElementById("loadingOverlay");
 
-  const name = nameInput.value.trim();
-  const birth = birthInput.value.trim();
-  const mobile = mobileInput.value.trim();
-  const mobile2 = mobile2Input.value.trim();
-  const timestamp = timestampInput.value.trim();
-  const consent = consentInput ? consentInput.value : "";
-  const signatureData = signatureCanvas.toDataURL("image/png");
+  // Mostrar overlay y desactivar botón
+  submitBtn.disabled = true;
+  overlay.style.display = "flex";
 
-  // Validar campos vacíos
-  if (!name) return scrollToAndHighlight(nameInput);
-  if (!birth) return scrollToAndHighlight(birthInput);
-  if (!mobile) return scrollToAndHighlight(mobileInput);
-  if (!mobile2) return scrollToAndHighlight(mobile2Input);
-  if (!timestamp) return scrollToAndHighlight(timestampInput);
-  if (!consent) return scrollToAndHighlight(document.querySelector('.consent-section'));
-  if (isCanvasBlank(signatureCanvas)) {
-    alert("Por favor, firme antes de enviar.");
-    return signatureCanvas.scrollIntoView({ behavior: "smooth", block: "center" });
+  const name = document.getElementById("username").value;
+  const birth = document.getElementById("dateBirth").value;
+  const mobile = document.getElementById("mobile").value;
+  const mobile2 = document.getElementById("mobile2Input").value;
+  const timestamp = document.getElementById("DateOfSigning").value;
+
+  let hasError = false;
+
+  if (!name) {
+    document.getElementById("1").style.borderColor = "red";
+    document.getElementById("warning").style.display = "block";
+    hasError = true;
+  } else {
+    document.getElementById("1").style.borderColor = "";
+    document.getElementById("warning").style.display = "none";
   }
 
-  // Mostrar spinner
-  const spinnerOverlay = document.getElementById("spinnerOverlay");
-  if (spinnerOverlay) spinnerOverlay.style.display = 'flex';
+  if (!birth) {
+    document.getElementById("b").style.borderColor = "red";
+    document.getElementById("warning2").style.display = "block";
+    hasError = true;
+  } else {
+    document.getElementById("b").style.borderColor = "";
+    document.getElementById("warning2").style.display = "none";
+  }
+
+  if (!mobile) {
+    document.getElementById("c").style.borderColor = "red";
+    document.getElementById("warning3").style.display = "block";
+    hasError = true;
+  } else {
+    document.getElementById("c").style.borderColor = "";
+    document.getElementById("warning3").style.display = "none";
+  }
+
+  if (!timestamp) {
+    document.getElementById("f").style.borderColor = "red";
+    document.getElementById("warning5").style.display = "block";
+    hasError = true;
+  } else {
+    document.getElementById("f").style.borderColor = "";
+    document.getElementById("warning5").style.display = "none";
+  }
+
+  const consentYes = document.getElementById("consentYes").checked;
+  const consentNo = document.getElementById("consentNo").checked;
+
+  if (!consentYes && !consentNo) {
+    document.getElementById("consent").style.borderColor = "red";
+    document.getElementById("warningConsent").style.display = "block";
+    hasError = true;
+  } else {
+    document.getElementById("consent").style.borderColor = "";
+    document.getElementById("warningConsent").style.display = "none";
+  }
+
+  const consentValue = consentYes ? "Yes" : "No";
+
+  const canvas = document.getElementById("sign");
+  const ctx = canvas.getContext("2d");
+  const isCanvasEmpty = ctx.getImageData(0, 0, canvas.width, canvas.height).data.every(value => value === 0);
+
+  if (isCanvasEmpty) {
+    document.getElementById("2").style.borderColor = "red";
+    document.getElementById("warning4").style.display = "block";
+    hasError = true;
+  } else {
+    document.getElementById("2").style.borderColor = "";
+    document.getElementById("warning4").style.display = "none";
+  }
+
+  if (hasError) {
+    submitBtn.disabled = false;
+    overlay.style.display = "none";
+    return;
+  }
+
+  const signatureBase64 = canvas.toDataURL("image/png").split(',')[1];
+
+  const payload = {
+    name,
+    birth,
+    mobile,
+    mobile2,
+    timestamp,
+    consent: consentValue,
+    signature: {
+      filename: `signature_${name}.png`,
+      mimeType: "image/png",
+      data: signatureBase64
+    }
+  };
 
   try {
     await fetch("https://script.google.com/macros/s/AKfycbzqMRvHKU7BTaRa6lJijOQuMdBgDRZaoJS9Xil_2adwaZNM1-wZhHtToR6mWsqkyjrRnQ/exec", {
-      method: "POST",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify({
-        filename: "signature.png",
-        mimeType: "image/png",
-        data: signatureData.split(",")[1],
-        name,
-        birth,
-        mobile,
-        mobile2,
-        timestamp,
-        consent
-      })
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
     });
 
-    alert("Formulario enviado correctamente.");
-    location.reload();
-  } catch (error) {
-    console.error("Error al enviar:", error);
-    alert("Hubo un error al enviar el formulario.");
-  } finally {
-    if (spinnerOverlay) spinnerOverlay.style.display = 'none';
+    const hideIds = ["1", "b", "c", "e", "2", "f", "mobile2", "consent", "submit"];
+    hideIds.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = "none";
+    });
+
+    document.getElementById("ty").style.display = "block";
+    overlay.style.display = "none";
+  } catch (err) {
+    console.error("Error al enviar datos:", err);
+    alert("Hubo un error al enviar el formulario. Intente de nuevo.");
+    submitBtn.disabled = false;
+    overlay.style.display = "none";
   }
 }
 
-// Helper para validar campos vacíos
-function scrollToAndHighlight(el) {
-  el.scrollIntoView({ behavior: "smooth", block: "center" });
-  el.focus();
-  el.classList.add("error");
-  setTimeout(() => el.classList.remove("error"), 2000);
-}
-
-// Verifica si el canvas está vacío
-function isCanvasBlank(canvas) {
-  const blank = document.createElement("canvas");
-  blank.width = canvas.width;
-  blank.height = canvas.height;
-  return canvas.toDataURL() === blank.toDataURL();
-}
 
 
 </script>
