@@ -63,25 +63,25 @@
   <div id="firstNameDiv" class="form-container2">
     <div class="question">First Name:</div>
     <input type="text" id="firstName" placeholder="Enter your first name">
-    <div class="warning" id="warnFirstName">This is a required field</div>
+   <br><br><div class="warning" id="warnFirstName">This is a required field</div>
   </div>
 
   <div id="lastNameDiv" class="form-container2">
     <div class="question">Last Name:</div>
     <input type="text" id="lastName" placeholder="Enter your last name">
-    <div class="warning" id="warnLastName">This is a required field</div>
+    <br><br><div class="warning" id="warnLastName">This is a required field</div>
   </div>
 
   <div id="birthDiv" class="form-container2">
     <div class="question">Class Date:</div>
     <input type="date" id="birthDate">
-    <div class="warning" id="warnBirth">This is a required field</div>
+    <br><br><div class="warning" id="warnBirth">This is a required field</div>
   </div>
 
   <div id="emailDiv" class="form-container2">
     <div class="question">Email:</div>
     <input type="email" id="email" placeholder="Enter your email">
-    <div class="warning" id="warnEmail">This is a required field</div>
+    <br><br><div class="warning" id="warnEmail">This is a required field</div>
   </div>
 
   <!-- Nueva pregunta tipo dropdown -->
@@ -95,14 +95,14 @@
       <option value="other">Other</option>
     </select>
     <input type="text" id="otherSource" placeholder="Please specify" style="display:none; margin-top:10px;">
-    <div class="warning" id="warnSource">This is a required field</div>
+  <br><br><div class="warning" id="warnSource">This is a required field</div>
   </div>
 
   <div id="signDiv" class="form-container2">
     <p><strong><u>Please sign in the space below.</u></strong></p>
     <canvas id="sign"></canvas><br>
     <button type="button" id="clearButton">Erase</button>
-    <div class="warning" id="warnSign">Signature is required</div>
+   <br><br><div class="warning" id="warnSign">Signature is required</div>
   </div>
 
   <div id="submit" class="form-container3">
@@ -121,8 +121,23 @@ function reloadApp(){ location.reload(); }
 const canvas=document.getElementById("sign");
 const ctx=canvas.getContext("2d");
 let drawing=false,pos={x:0,y:0};
-function resizeCanvas(){canvas.width=canvas.offsetWidth;canvas.height=canvas.offsetWidth*0.6;}
-resizeCanvas();window.addEventListener("resize",resizeCanvas);
+function resizeCanvas(){
+  // guardar firma como imagen temporal
+  const data = canvas.toDataURL();
+
+  // cambiar tamaño
+  canvas.width = canvas.offsetWidth;
+  canvas.height = canvas.offsetWidth * 0.6;
+
+  // volver a dibujar la firma guardada
+  const img = new Image();
+  img.onload = () => ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+  img.src = data;
+}
+
+resizeCanvas();
+window.addEventListener("resize", resizeCanvas);
+
 function setPosition(e){const r=canvas.getBoundingClientRect();if(e.touches){pos.x=e.touches[0].clientX-r.left;pos.y=e.touches[0].clientY-r.top;}else{pos.x=e.clientX-r.left;pos.y=e.clientY-r.top;}}
 function draw(e){if(!drawing)return;ctx.beginPath();ctx.lineWidth=5;ctx.lineCap="round";ctx.strokeStyle="black";ctx.moveTo(pos.x,pos.y);setPosition(e);ctx.lineTo(pos.x,pos.y);ctx.stroke();}
 canvas.addEventListener("mousedown",e=>{drawing=true;setPosition(e);});canvas.addEventListener("mouseup",()=>drawing=false);canvas.addEventListener("mousemove",draw);
@@ -151,7 +166,17 @@ async function send(){
   const signatureEmpty=ctx.getImageData(0,0,canvas.width,canvas.height).data.every(v=>v===0);
 
   let error=false;
-  function showWarn(id,cond){document.getElementById(id).style.display=cond?"block":"none";if(cond)error=true;}
+  let firstErrorElement=null;
+
+  function showWarn(id,cond){
+    const el=document.getElementById(id);
+    el.style.display=cond?"block":"none";
+    if(cond){
+      error=true;
+      if(!firstErrorElement) firstErrorElement=el; // guardar primer error
+    }
+  }
+
   showWarn("warnFirstName",!firstName);
   showWarn("warnLastName",!lastName);
   showWarn("warnBirth",!birth);
@@ -159,7 +184,11 @@ async function send(){
   showWarn("warnSign",signatureEmpty);
   showWarn("warnSource",!source || (source==="other" && !other));
 
-  if(error)return;
+  // si hay errores -> scroll al primer campo inválido
+  if(error){
+    firstErrorElement.scrollIntoView({behavior:"smooth",block:"center"});
+    return;
+  }
 
   document.getElementById("submit").disabled=true;
   document.getElementById("loadingOverlay").style.display="flex";
@@ -174,7 +203,10 @@ async function send(){
   try{
     await fetch("https://script.google.com/macros/s/AKfycbwC5QgxIf9Ri0SYrt9DUFvDJqKiQSB9KnRaFc6Riy5KT3g2CVAuyp5yDX_6EH_NgmjvOQ/exec",{method:"POST",headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)});
     document.getElementById("thanks").style.display="block";
-    ["birthDiv","firstNameDiv","lastNameDiv","emailDiv","dropdownDiv","signDiv","submit","inst"].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display="none";});
+    ["birthDiv","firstNameDiv","lastNameDiv","emailDiv","dropdownDiv","signDiv","submit","inst"].forEach(id=>{
+      const el=document.getElementById(id);
+      if(el)el.style.display="none";
+    });
   }catch(e){console.error(e);}
   document.getElementById("loadingOverlay").style.display="none";
   document.getElementById("submit").disabled=false;
