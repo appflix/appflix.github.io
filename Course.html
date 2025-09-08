@@ -51,7 +51,7 @@
 
   <div id="intro" class="form-container">
     <div class="title">Life Saving Education Class Registration</div>
-    <p><strong>Please complete each section carefully, and ensure that your name is spelled correctly. The name you provide will appear exactly as entered on your certification.</strong></p>
+    <p id="inst"><strong>Please complete each section carefully, and ensure that your name is spelled correctly. The name you provide will appear exactly as entered on your certification.</strong></p>
     <div class="subtitle" id="thanks" style="display:none;">
       Your response has been recorded<br><br>
       <button onclick="reloadApp();" style="background:none;color:blue;border:none;text-decoration:underline;cursor:pointer;">Back to Form</button>
@@ -105,8 +105,8 @@
     <div class="warning" id="warnSign">Signature is required</div>
   </div>
 
-  <div class="form-container3">
-    <button type="button" id="submit" onclick="send()">Submit</button>
+  <div id="submit" class="form-container3">
+    <button type="button"  onclick="send()">Submit</button>
   </div>
 
   <div id="loadingOverlay">
@@ -172,9 +172,9 @@ async function send(){
   };
   
   try{
-    await fetch("https://script.google.com/macros/s/AKfycby_Ibp88On1zIXiTDqMOAWyc2PFzI9WqFdTz-_r1CizPFTy251JYaELH3TtAR0oR_p5yw/exec",{method:"POST",headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)});
+    await fetch("https://script.google.com/macros/s/AKfycbwC5QgxIf9Ri0SYrt9DUFvDJqKiQSB9KnRaFc6Riy5KT3g2CVAuyp5yDX_6EH_NgmjvOQ/exec",{method:"POST",headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)});
     document.getElementById("thanks").style.display="block";
-    ["birthDiv","firstNameDiv","lastNameDiv","emailDiv","dropdownDiv","signDiv","submit"].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display="none";});
+    ["birthDiv","firstNameDiv","lastNameDiv","emailDiv","dropdownDiv","signDiv","submit","inst"].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display="none";});
   }catch(e){console.error(e);}
   document.getElementById("loadingOverlay").style.display="none";
   document.getElementById("submit").disabled=false;
