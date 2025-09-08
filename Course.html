@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Formulario</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap">
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #e7e6fb;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      height: 100vh;
+      flex-direction: column;
+      align-items: center;
+    }
+    .form-container, .form-container2, .form-container3 {
+      max-width: 600px;
+      width: 100%;
+      background-color: #fff;
+      border: 1px solid #dadce0;
+      border-radius: 8px;
+      box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.1);
+      box-sizing: border-box;
+      padding: 22px;
+      margin-bottom: 20px;
+    }
+    .form-container {
+      border-top: 8px solid #003cff;
+    }
+    .title { font-size: 32px; font-weight: bold; color: #202124; margin-bottom: 12px; }
+    .subtitle { font-size: 14px; font-weight: bold; color: #202124; margin-bottom: 12px; }
+    .warning { font-size: 14px; font-weight: bold; color: red; margin-bottom: 12px; display: none; }
+    .question { font-size: 18px; font-weight: bold; color: #202124; margin-bottom: 12px; }
+    input, select { width: calc(100% - 24px); padding: 10px; border: 1px solid #dadce0; border-radius: 4px; font-size: 16px; margin-top: 4px; }
+    input:focus, select:focus { border-color: #673ab7; outline: none; }
+    button { background-color: #003cff; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; }
+    button:hover { background-color: #311b92; }
+    canvas { width: 100%; aspect-ratio: 5 / 3; border: 3px solid black; display: block; touch-action: none; }
+    #loadingOverlay { position: fixed; top:0; left:0; width:100vw; height:100vh; background-color:rgba(255,255,255,0.8); z-index:9999; display:none; align-items:center; justify-content:center; flex-direction:column; }
+    .spinner { border: 6px solid #ccc; border-top: 6px solid #003cff; border-radius: 50%; width: 60px; height: 60px; animation: spin 1s linear infinite; }
+    .loading-text { margin-top: 16px; font-size: 18px; font-weight: bold; color: #003cff; }
+    @keyframes spin { 0%{transform:rotate(0deg);}100%{transform:rotate(360deg);} }
+  </style>
+</head>
+<body>
+
+
+
+  <div id="intro" class="form-container">
+    <div class="title">Life Saving Education Class Registration</div>
+    <p><strong>Please complete each section carefully, and ensure that your name is spelled correctly. The name you provide will appear exactly as entered on your certification.</strong></p>
+    <div class="subtitle" id="thanks" style="display:none;">
+      Your response has been recorded<br><br>
+      <button onclick="reloadApp();" style="background:none;color:blue;border:none;text-decoration:underline;cursor:pointer;">Back to Form</button>
+    </div>
+  </div>
+
+
+
+  <div id="firstNameDiv" class="form-container2">
+    <div class="question">First Name:</div>
+    <input type="text" id="firstName" placeholder="Enter your first name">
+    <div class="warning" id="warnFirstName">This is a required field</div>
+  </div>
+
+  <div id="lastNameDiv" class="form-container2">
+    <div class="question">Last Name:</div>
+    <input type="text" id="lastName" placeholder="Enter your last name">
+    <div class="warning" id="warnLastName">This is a required field</div>
+  </div>
+
+  <div id="birthDiv" class="form-container2">
+    <div class="question">Class Date:</div>
+    <input type="date" id="birthDate">
+    <div class="warning" id="warnBirth">This is a required field</div>
+  </div>
+
+  <div id="emailDiv" class="form-container2">
+    <div class="question">Email:</div>
+    <input type="email" id="email" placeholder="Enter your email">
+    <div class="warning" id="warnEmail">This is a required field</div>
+  </div>
+
+  <!-- Nueva pregunta tipo dropdown -->
+  <div id="dropdownDiv" class="form-container2">
+    <div class="question">Course selection</div>
+    <select id="sourceSelect">
+      <option value="">-- Select an option --</option>
+      <option value="Course 1">Course 1</option>
+      <option value="Course 2">Course 2</option>
+      <option value="Course 3">Course 3</option>
+      <option value="other">Other</option>
+    </select>
+    <input type="text" id="otherSource" placeholder="Please specify" style="display:none; margin-top:10px;">
+    <div class="warning" id="warnSource">This is a required field</div>
+  </div>
+
+  <div id="signDiv" class="form-container2">
+    <p><strong><u>Please sign in the space below.</u></strong></p>
+    <canvas id="sign"></canvas><br>
+    <button type="button" id="clearButton">Erase</button>
+    <div class="warning" id="warnSign">Signature is required</div>
+  </div>
+
+  <div class="form-container3">
+    <button type="button" id="submit" onclick="send()">Submit</button>
+  </div>
+
+  <div id="loadingOverlay">
+    <div class="spinner"></div>
+    <div class="loading-text">Sending...</div>
+  </div>
+
+<script>
+function reloadApp(){ location.reload(); }
+
+// firma
+const canvas=document.getElementById("sign");
+const ctx=canvas.getContext("2d");
+let drawing=false,pos={x:0,y:0};
+function resizeCanvas(){canvas.width=canvas.offsetWidth;canvas.height=canvas.offsetWidth*0.6;}
+resizeCanvas();window.addEventListener("resize",resizeCanvas);
+function setPosition(e){const r=canvas.getBoundingClientRect();if(e.touches){pos.x=e.touches[0].clientX-r.left;pos.y=e.touches[0].clientY-r.top;}else{pos.x=e.clientX-r.left;pos.y=e.clientY-r.top;}}
+function draw(e){if(!drawing)return;ctx.beginPath();ctx.lineWidth=5;ctx.lineCap="round";ctx.strokeStyle="black";ctx.moveTo(pos.x,pos.y);setPosition(e);ctx.lineTo(pos.x,pos.y);ctx.stroke();}
+canvas.addEventListener("mousedown",e=>{drawing=true;setPosition(e);});canvas.addEventListener("mouseup",()=>drawing=false);canvas.addEventListener("mousemove",draw);
+canvas.addEventListener("touchstart",e=>{drawing=true;setPosition(e);},{passive:false});canvas.addEventListener("touchend",()=>drawing=false);canvas.addEventListener("touchmove",e=>{draw(e);},{passive:false});
+document.getElementById("clearButton").addEventListener("click",()=>ctx.clearRect(0,0,canvas.width,canvas.height));
+
+// mostrar/ocultar "Other"
+const sourceSelect=document.getElementById("sourceSelect");
+const otherSource=document.getElementById("otherSource");
+sourceSelect.addEventListener("change",()=>{
+  if(sourceSelect.value==="other"){
+    otherSource.style.display="block";
+  }else{
+    otherSource.style.display="none";
+    otherSource.value="";
+  }
+});
+
+async function send(){
+  const firstName=document.getElementById("firstName").value.trim();
+  const lastName=document.getElementById("lastName").value.trim();
+  const birth=document.getElementById("birthDate").value;
+  const email=document.getElementById("email").value.trim();
+  const source=sourceSelect.value;
+  const other=otherSource.value.trim();
+  const signatureEmpty=ctx.getImageData(0,0,canvas.width,canvas.height).data.every(v=>v===0);
+
+  let error=false;
+  function showWarn(id,cond){document.getElementById(id).style.display=cond?"block":"none";if(cond)error=true;}
+  showWarn("warnFirstName",!firstName);
+  showWarn("warnLastName",!lastName);
+  showWarn("warnBirth",!birth);
+  showWarn("warnEmail",!email);
+  showWarn("warnSign",signatureEmpty);
+  showWarn("warnSource",!source || (source==="other" && !other));
+
+  if(error)return;
+
+  document.getElementById("submit").disabled=true;
+  document.getElementById("loadingOverlay").style.display="flex";
+
+  const signatureBase64=canvas.toDataURL("image/png").split(',')[1];
+  const payload={
+    firstName,lastName,birth,email,
+    source: source==="other"?other:source,
+    signature:{filename:`signature_${firstName}_${lastName}.png`,mimeType:"image/png",data:signatureBase64}
+  };
+  
+  try{
+    await fetch("https://script.google.com/macros/s/AKfycby_Ibp88On1zIXiTDqMOAWyc2PFzI9WqFdTz-_r1CizPFTy251JYaELH3TtAR0oR_p5yw/exec",{method:"POST",headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)});
+    document.getElementById("thanks").style.display="block";
+    ["birthDiv","firstNameDiv","lastNameDiv","emailDiv","dropdownDiv","signDiv","submit"].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display="none";});
+  }catch(e){console.error(e);}
+  document.getElementById("loadingOverlay").style.display="none";
+  document.getElementById("submit").disabled=false;
+}
+</script>
+</body>
+</html>
