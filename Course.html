@@ -59,6 +59,30 @@
   </div>
 
 
+  <div id="birthDiv" class="form-container2">
+    <div class="question">Class Date:</div>
+    <input type="date" id="birthDate">
+    <br><br><div class="warning" id="warnBirth">This is a required field</div>
+  </div>
+
+    <!-- Nueva pregunta tipo dropdown -->
+  <div id="dropdownDiv" class="form-container2">
+    <div class="question">Course selection</div>
+<select id="sourceSelect">
+  <option value="">-- Select an option --</option>
+  <option value="AHA - ACLS">AHA - ACLS</option>
+  <option value="AHA - Basic Life Support">AHA - Basic Life Support</option>
+  <option value="AHA - PALS">AHA - PALS</option>
+  <option value="NASP - Hazwopper 8hr Recert">NASP - Hazwopper 8hr Recert</option>
+  <option value="NASP - Hazwopper 24Hr">NASP - Hazwopper 24Hr</option>
+  <option value="NASP - Hazwopper 40Hr">NASP - Hazwopper 40Hr</option>
+  <option value="OSHA - OSHA 10 (Construction)">OSHA - OSHA 10 (Construction)</option>
+  <option value="OSHA - OSHA 30 (Construction)">OSHA - OSHA 30 (Construction)</option>
+  <option value="other">Other</option>
+</select>
+    <input type="text" id="otherSource" placeholder="Please specify" style="display:none; margin-top:10px;">
+  <br><br><div class="warning" id="warnSource">This is a required field</div>
+  </div>
 
   <div id="firstNameDiv" class="form-container2">
     <div class="question">First Name:</div>
@@ -72,10 +96,11 @@
     <br><br><div class="warning" id="warnLastName">This is a required field</div>
   </div>
 
-  <div id="birthDiv" class="form-container2">
-    <div class="question">Class Date:</div>
-    <input type="date" id="birthDate">
-    <br><br><div class="warning" id="warnBirth">This is a required field</div>
+
+  <div id="addressDiv" class="form-container2">
+    <div class="question">Address:</div>
+    <input type="text" id="address" placeholder="Enter your address">
+    <br><br><div class="warning" id="warnAddress">This is a required field</div>
   </div>
 
   <div id="emailDiv" class="form-container2">
@@ -84,19 +109,7 @@
     <br><br><div class="warning" id="warnEmail">This is a required field</div>
   </div>
 
-  <!-- Nueva pregunta tipo dropdown -->
-  <div id="dropdownDiv" class="form-container2">
-    <div class="question">Course selection</div>
-    <select id="sourceSelect">
-      <option value="">-- Select an option --</option>
-      <option value="Course 1">Course 1</option>
-      <option value="Course 2">Course 2</option>
-      <option value="Course 3">Course 3</option>
-      <option value="other">Other</option>
-    </select>
-    <input type="text" id="otherSource" placeholder="Please specify" style="display:none; margin-top:10px;">
-  <br><br><div class="warning" id="warnSource">This is a required field</div>
-  </div>
+
 
   <div id="signDiv" class="form-container2">
     <p><strong><u>Please sign in the space below.</u></strong></p>
@@ -161,6 +174,7 @@ async function send(){
   const lastName=document.getElementById("lastName").value.trim();
   const birth=document.getElementById("birthDate").value;
   const email=document.getElementById("email").value.trim();
+  const address=document.getElementById("address").value.trim();
   const source=sourceSelect.value;
   const other=otherSource.value.trim();
   const signatureEmpty=ctx.getImageData(0,0,canvas.width,canvas.height).data.every(v=>v===0);
@@ -181,6 +195,7 @@ async function send(){
   showWarn("warnLastName",!lastName);
   showWarn("warnBirth",!birth);
   showWarn("warnEmail",!email);
+  showWarn("warnAddress",!email);
   showWarn("warnSign",signatureEmpty);
   showWarn("warnSource",!source || (source==="other" && !other));
 
@@ -195,15 +210,15 @@ async function send(){
 
   const signatureBase64=canvas.toDataURL("image/png").split(',')[1];
   const payload={
-    firstName,lastName,birth,email,
+    firstName,lastName,birth,email,address,
     source: source==="other"?other:source,
     signature:{filename:`signature_${firstName}_${lastName}.png`,mimeType:"image/png",data:signatureBase64}
   };
   
   try{
-    await fetch("https://script.google.com/macros/s/AKfycbwC5QgxIf9Ri0SYrt9DUFvDJqKiQSB9KnRaFc6Riy5KT3g2CVAuyp5yDX_6EH_NgmjvOQ/exec",{method:"POST",headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)});
+    await fetch("https://script.google.com/macros/s/AKfycbx4he6t-NVloH9rKXw_lOWgXum7ys9qEsxWnS3O3r5j67nm9AaeoSoRs04AErKWOngjRA/exec",{method:"POST",headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)});
     document.getElementById("thanks").style.display="block";
-    ["birthDiv","firstNameDiv","lastNameDiv","emailDiv","dropdownDiv","signDiv","submit","inst"].forEach(id=>{
+    ["birthDiv","firstNameDiv","lastNameDiv","emailDiv","dropdownDiv","signDiv","submit","inst","addressDiv"].forEach(id=>{
       const el=document.getElementById(id);
       if(el)el.style.display="none";
     });
