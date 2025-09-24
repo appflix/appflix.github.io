@@ -1,0 +1,3061 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Consentimiento Informado</title>
+  <style>
+    /* Estilos existentes del editor (permanecen iguales) */
+    :root {
+      --main-color: #003cff;
+      --accent: var(--main-color);
+      --light-gray: #f8f9fa;
+      --border-color: #dadce0;
+      --text-color: #202124;
+      --secondary-text: #5f6368;
+    }
+
+    body {
+      font-family: 'Roboto', 'Segoe UI', Arial, sans-serif;
+      background:  #e9e9e9;
+      margin: 0;
+      padding: 20px;
+      color: var(--text-color);
+    }
+
+.view-toggle {
+  max-width: 600px;         /* mismo que el formulario */
+  margin: 0 auto 10px;      /* centrado */
+  display: flex;
+  justify-content: flex-end; /* empuja el botón a la derecha */
+}
+
+.view-toggle button {
+  padding: 6px 12px;        /* más pequeño */
+  font-size: 13px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  cursor: pointer;
+  background: #fff;
+}
+
+
+    .view-toggle button.active {
+      background: var(--main-color);
+      color: white;
+      border-color: var(--main-color);
+    }
+
+    .editor-view, .preview-view {
+      display: none;
+    }
+
+    .editor-view.active, .preview-view.active {
+      display: block;
+    }
+
+    /* Estilos del editor (permanecen iguales) */
+    .controls {
+      max-width: 800px;
+      margin: 0 auto 16px;
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      align-items: center;
+    }
+
+    .controls button, .controls input[type="color"] {
+      padding: 6px 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      background: #fff;
+    }
+
+    .controls label { font-size: 14px; color: #444; }
+
+    .form-container {
+      max-width: 800px;
+      margin: auto;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .logo-config {
+      padding: 24px 24px 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .logo-input-container {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .logo-preview {
+      width: 100px;
+      height: 60px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: var(--light-gray);
+    }
+
+    .logo-preview img {
+      max-width: 100%;
+      max-height: 100%;
+    }
+
+    .logo-input {
+      flex: 1;
+      padding: 8px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    .form-header {
+      border-top: 8px solid var(--main-color);
+      padding: 24px;
+      border-bottom: 1px solid var(--border-color);
+      position: relative;
+    }
+
+    .form-title {
+      width: 100%;
+      font-size: 28px;
+      font-weight: normal;
+      border: none;
+      outline: none;
+      color: var(--text-color);
+      margin-bottom: 12px;
+      background: transparent;
+      font-family: inherit;
+      cursor: text;
+    }
+
+    .form-description {
+      width: 100%;
+      font-size: 14px;
+      border: none;
+      outline: none;
+      color: var(--secondary-text);
+      resize: none;
+      background: transparent;
+      font-family: inherit;
+      min-height: 60px;
+      cursor: text;
+    }
+
+    .closing-message {
+      padding: 16px 24px;
+      border-top: 1px solid var(--border-color);
+      background: #f9f9f9;
+    }
+
+    .closing-title {
+      font-size: 16px;
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: var(--text-color);
+    }
+
+    .closing-textarea {
+      width: 100%;
+      min-height: 80px;
+      padding: 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 14px;
+      resize: vertical;
+    }
+
+    /* Estilos existentes para bloques de preguntas, etc. */
+    .question-block, .text-block, .image-block {
+      padding: 24px;
+      border-bottom: 1px solid var(--border-color);
+      background: #fff;
+      position: relative;
+    }
+
+    .question-block.dragging, .section-block.dragging, .text-block.dragging, .image-block.dragging {
+      opacity: 0.5;
+    }
+
+    .question-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .question-input {
+      flex-grow: 1;
+      font-size: 16px;
+      border: none;
+      border-bottom: 1px solid transparent;
+      padding: 8px 0;
+      outline: none;
+      background: transparent;
+      font-family: inherit;
+      cursor: text;
+    }
+
+    .question-input:focus {
+      border-bottom: 1px dashed var(--border-color);
+    }
+
+    .type-select {
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 6px 8px;
+      font-size: 14px;
+      margin-left: 16px;
+      font-family: inherit;
+      color: var(--secondary-text);
+    }
+
+    .required-toggle {
+      margin-left: auto;
+      font-size: 14px;
+      color: var(--secondary-text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      user-select: none;
+    }
+
+    .question-body {
+      margin-left: 24px;
+    }
+
+    .short-answer-text {
+      padding-bottom: 8px;
+      color: var(--secondary-text);
+      font-size: 14px;
+    }
+
+    .short-answer-input, .paragraph-input {
+      width: 100%;
+      padding: 8px 0;
+      border: none;
+      border-bottom: 1px solid var(--border-color);
+      outline: none;
+      font-size: 14px;
+      font-family: inherit;
+      background: transparent;
+      resize: vertical;
+      min-height: 24px;
+    }
+
+    .question-footer {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+    }
+
+    .action-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #5f6368;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px;
+      border-radius: 50%;
+      transition: background-color 0.2s;
+    }
+
+    .action-btn:hover {
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    .delete-btn {
+      background: none;
+      border: none;
+      color: #d93025;
+      font-size: 20px;
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 50%;
+      transition: background-color 0.2s;
+    }
+
+    .delete-btn:hover {
+      background-color: rgba(217, 48, 37, 0.1);
+    }
+
+    .options {
+      margin-top: 16px;
+    }
+
+    .option {
+      display: flex;
+      align-items: center;
+      margin: 8px 0;
+      color: var(--text-color);
+      gap: 8px;
+    }
+
+    .option input[type="radio"],
+    .option input[type="checkbox"] {
+      accent-color: var(--accent);
+    }
+
+    .option-text {
+      border: none;
+      border-bottom: 1px dashed #ccc;
+      outline: none;
+      padding: 4px 0;
+      flex: 1;
+      font-family: inherit;
+      font-size: 14px;
+      background: transparent;
+      cursor: text;
+    }
+
+    .add-option,.add-other {
+      margin-top: 8px;
+      font-size: 14px;
+      color: #1a73e8;
+      cursor: pointer;
+      user-select: none;
+      display: inline-block;
+    }
+
+    .add-option:hover,.add-other { text-decoration: underline; }
+
+    .footer {
+      padding: 16px 24px;
+      text-align: right;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .submit-btn {
+      background: var(--main-color);
+      color: #fff;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 4px;
+      font-size: 14px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .submit-btn:hover { filter: brightness(0.95); }
+
+    /* Barra lateral */
+    .sidebar {
+      position: fixed;
+      top: 100px;
+      right: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .sidebar button {
+      width: 40px;
+      height: 40px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      background: #fff;
+      cursor: pointer;
+      font-size: 18px;
+      transition: background-color 0.2s;
+    }
+
+    .sidebar button:hover { background: #f1f3f4; }
+
+    /* Bloque de sección */
+    .section-block {
+      padding: 20px;
+      margin: 32px 0;
+      background: #f1f3f4;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      cursor: grab;
+    }
+
+    .section-title {
+      width: 100%;
+      font-size: 20px;
+      font-weight: bold;
+      border: none;
+      outline: none;
+      background: transparent;
+      margin-bottom: 10px;
+      font-family: inherit;
+      cursor: text;
+    }
+
+    .section-description {
+      width: 100%;
+      font-size: 14px;
+      border: none;
+      outline: none;
+      background: transparent;
+      color: var(--secondary-text);
+      resize: none;
+      font-family: inherit;
+      cursor: text;
+    }
+
+    .required-field {
+      border-left: 3px solid #d93025 !important;
+    }
+
+    .error-message {
+      color: #d93025;
+      font-size: 12px;
+      margin-top: 4px;
+      display: none;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #333;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 4px;
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .toast.show {
+      opacity: 1;
+    }
+
+    .name-display {
+      display: none; /* Ocultamos la visualización del nombre */
+    }
+
+    .placeholder-input {
+      width: 100%;
+      padding: 8px;
+      margin: 8px 0;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    .tutorial-note {
+      font-size: 12px;
+      color: #5f6368;
+      font-style: italic;
+      margin-top: 4px;
+    }
+
+    .validation-status {
+      margin-top: 10px;
+      padding: 10px;
+      background: #f8f9fa;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    .status-ok {
+      color: #0f9d58;
+      border-left: 3px solid #0f9d58;
+    }
+
+    .status-error {
+      color: #d93025;
+      border-left: 3px solid #d93025;
+    }
+
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgb(0, 0, 0);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+
+.spinner {
+  width: 80px;
+  height: 80px;
+  border: 4px solid transparent;
+  border-top: 4px solid var(--main-color);
+  border-bottom: 4px solid var(--main-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Nuevos estilos para editores de texto enriquecido */
+    .rich-text-editor {
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 8px;
+      min-height: 100px;
+      margin-top: 8px;
+      font-family: inherit;
+    }
+
+    .rich-text-editor:focus {
+      outline: none;
+      border-color: var(--main-color);
+    }
+
+    .format-toolbar {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .format-btn {
+      background: none;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 4px 8px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .format-btn:hover {
+      background-color: #f1f3f4;
+    }
+
+    .format-btn.active {
+      background-color: #e6f2ff;
+      border-color: var(--main-color);
+    }
+
+    /* Estilos para contenido editable formateado */
+    [contenteditable=true] {
+      outline: none;
+      min-height: 60px;
+      padding: 8px;
+      border: 1px solid #eee;
+      border-radius: 4px;
+    }
+
+    [contenteditable=true]:focus {
+      border-color: #ccc;
+    }
+    
+    /* Indicador de arrastre */
+    .drag-handle {
+      cursor: grab;
+      padding: 8px;
+      color: #5f6368;
+      user-select: none;
+    }
+    
+    .drag-handle:active {
+      cursor: grabbing;
+    }
+
+    /* Estilos de vista previa */
+    .preview-logo-container {
+            width: 600px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-sizing: border-box;
+            margin: 0 auto 20px; /* centra horizontalmente y añade margen inferior */
+            
+    }
+
+    .preview-logo-container img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            object-fit: contain;
+    }
+
+    .preview-form-container {
+            width: 600px;
+            background-color: #fff;
+            border: 1px solid var(--border-color);
+            border-top: 8px solid var(--main-color);
+            border-radius: 8px;
+            box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+            padding: 22px;
+            margin-bottom: 20px;
+            margin: 0 auto 20px; /* centra horizontalmente y añade margen inferior */
+    }
+
+    .preview-form-container2 {
+            width: 600px;
+            background-color: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+            padding: 32px;
+            margin-bottom: 20px;
+            position: relative;
+            margin: 0 auto 20px; /* centra horizontalmente y añade margen inferior */
+    }
+
+    .preview-form-container3 {
+            max-width: 600px;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 0px;
+            margin-bottom: 20px;
+            margin: 0 auto 20px; /* centra horizontalmente y añade margen inferior */
+    }
+
+    .preview-question-container {
+      margin-bottom: 32px;
+    }
+
+    .preview-title {
+      font-size: 28px;
+      font-weight: bold;
+      color: var(--text-color);
+      margin-bottom: 12px;
+      text-align: center;
+      line-height: 1.3;
+    }
+    
+    .preview-warning {
+      font-size: 14px;
+      font-weight: bold;
+      color: var(--error-color);
+      margin-top: 8px;
+      padding: 8px 12px;
+      background-color: #fce8e6;
+      border-radius: 4px;
+      border-left: 4px solid var(--error-color);
+      display: none;
+    }
+
+    .preview-question {
+      font-size: 18px;
+      font-weight: bold;
+      color: var(--text-color);
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+    
+    .preview-textblock {
+      font-size: 16px;
+      color: var(--text-color);
+      line-height: 1.6;
+      margin-bottom: 12px;
+      padding: 12px;
+      background-color: #f9f9f9;
+      border-radius: 4px;
+    }
+
+    .preview-input-container {
+      margin-bottom: 24px;
+    }
+
+    .preview-input, .preview-textarea, .preview-select {
+      width: calc(100% - 24px);
+      padding: 12px;
+      box-sizing: border-box;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      font-size: 16px;
+      margin-top: 8px;
+      transition: border-color 0.3s, box-shadow 0.3s;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    .preview-input:focus, .preview-textarea:focus, .preview-select:focus {
+      border-color: var(--main-color);
+      box-shadow: 0 0 0 2px rgba(0, 60, 255, 0.2);
+      outline: none;
+    }
+
+    .preview-textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .preview-button {
+      background-color: var(--main-color);
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 500;
+      transition: background-color 0.3s, transform 0.2s;
+      display: block;
+      margin: 0 auto;
+      min-width: 150px;
+    }
+
+    .preview-button:hover {
+      background-color: #0028cc;
+      transform: translateY(-2px);
+    }
+
+    .preview-button:active {
+      transform: translateY(0);
+    }
+     
+    .preview-canvas {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 5 / 3;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      touch-action: none;
+      display: block;
+      background-color: #f9f9f9;
+    }
+
+    .preview-input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+      margin-right: 8px;
+    }
+
+    .preview-radio-group, .preview-checkbox-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 16px;
+      font-size: 16px;
+    }
+
+    .preview-radio-group label, .preview-checkbox-group label {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .preview-radio-group input[type="radio"] {
+      width: 18px;
+      height: 18px;
+      margin-right: 8px;
+      cursor: pointer;
+    }
+
+    .preview-signature-info {
+      margin-bottom: 12px;
+      line-height: 1.5;
+    }
+
+    .preview-error-message {
+      color: var(--error-color);
+      background-color: #fce8e6;
+      padding: 12px;
+      border-radius: 4px;
+      margin: 10px 0;
+      display: none;
+      max-width: 100%;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    
+    .preview-description-container {
+      font-size: 16px;
+      line-height: 1.6;
+      color: #444;
+    }
+    
+    .preview-description-container ul {
+      padding-left: 20px;
+      margin: 12px 0;
+    }
+    
+    .preview-description-container li {
+      margin-bottom: 8px;
+    }
+    
+    .preview-thanks-container {
+      text-align: center;
+      padding: 30px;
+      background-color: #f5f5f5;
+      border-radius: 8px;
+      margin-top: 20px;
+    }
+    
+    .preview-thanks-title {
+      font-size: 24px;
+      color: #4caf50;
+      margin-bottom: 15px;
+      font-weight: bold;
+    }
+    
+    .preview-thanks-message {
+      font-size: 16px;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+    
+    .preview-back-button {
+      background: none;
+      color: var(--main-color);
+      border: none;
+      text-decoration: underline;
+      cursor: pointer;
+      padding: 0;
+      font-size: 16px;
+      font-weight: 500;
+    }
+    
+    .preview-required-marker {
+      color: red;
+    }
+
+    /* Fondo del modal */
+.password-modal {
+  display: none; /* oculto por defecto */
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+/* Contenido */
+.password-modal-content {
+  background: #fff;
+  padding: 20px 30px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  text-align: center;
+  max-width: 300px;
+  width: 100%;
+}
+
+.password-modal-content h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+.password-modal-content input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.modal-buttons button {
+  flex: 1;
+  padding: 8px 0;
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
+  background: #003cff;
+  color: #fff;
+}
+
+.modal-buttons button:hover {
+  filter: brightness(0.9);
+}
+
+.password-error {
+  color: #d93025;
+  font-size: 13px;
+  display: none;
+  margin-top: 8px;
+}
+
+
+.loading-text {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--main-color);
+  letter-spacing: 1px;
+  display: inline-block;
+}
+
+@media (max-width: 640px) {
+  #previewHeaderContainer,
+  #preview-container-date_1,
+  .preview-form-container,
+  .preview-form-container2,
+  .preview-form-container3,
+  .preview-logo-container {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+}
+
+  </style>
+</head>
+<body>
+  <div class="loading-overlay" id="loadingOverlay">
+        <div class="overlay-content">
+            <div class="spinner"></div><br><br>
+            <div class="loading-text">Cargando...</div>
+        </div>
+  </div>
+
+  <div class="view-toggle">
+
+<button id="previewViewBtn" class="active" style="display: none;">Vista Previa</button>
+  <button id="editViewBtn">Admin</button>
+  </div>
+
+  <!-- Vista del Editor -->
+  <div id="editorView" class="editor-view">
+    <div class="controls">
+      <button style="display: none;" id="exportForm">Exportar JSON</button>
+      <button style="display: none;" id="importForm">Importar JSON</button>
+      <label>Color: <input type="color" id="themeColor" value="#003cff" /></label>
+    </div>
+    <div class="form-container" id="formContainer">
+      <!-- Sección para configurar el logo -->
+      <div class="logo-config">
+        <div class="logo-input-container">
+          <div class="logo-preview" id="logoPreview">
+            <span style="color: #999; font-size: 12px;">Vista previa del logo</span>
+          </div>
+          <input type="text" class="logo-input" id="logoUrl" 
+                 placeholder="Ingresa la URL directa de la imagen para el logo" 
+                 value="https://i.ibb.co/3f1GNGW/Logo-Focus.jpg" />
+        </div>
+      </div>
+
+      <div class="form-header">
+        <input class="form-title" type="text" value="ACUERDO DE SERVICIO DE MENSAJERÍA DE TEXTO" placeholder="Título del formulario" />
+        <div class="format-toolbar">
+          <button class="format-btn" data-command="bold" title="Negrita">N</button>
+        </div>
+        <div class="rich-text-editor" id="formDescription" contenteditable="true" data-placeholder="Descripción del formulario"></div>
+      </div>
+
+      <div id="questions">
+        <!-- Bloque inicial con nuevo diseño -->
+        <div class="question-block" data-type="text" data-name="text_1">
+          <div class="drag-handle" title="Arrastrar bloque">≡</div>
+          <div class="question-header">
+            <div class="format-toolbar">
+              <button class="format-btn" data-command="bold" title="Negrita">N</button>
+            </div>
+            <div class="rich-text-editor question-input" contenteditable="true" data-placeholder="Ingresa la pregunta aquí"></div>
+            <select class="type-select">
+              <option value="text" selected>Respuesta corta</option>
+              <option value="radio">Opción múltiple</option>
+              <option value="checkbox">Casillas de verificación</option>
+              <option value="dropdown">Lista desplegable</option>
+              <option value="paragraph">Párrafo</option>
+              <option value="date">Fecha</option>
+              <option value="time">Hora</option>
+              <option value="signature">Firma</option>
+            </select>
+          </div>
+          
+          <div class="question-body">
+            <input type="text" class="short-answer-input" placeholder="Ingresa tu respuesta aquí">
+            <div class="name-display">Nombre del campo: text_1</div>
+            <div class="tutorial-note">Haz clic en cualquier texto para editarlo directamente</div>
+          </div>
+          
+          <div class="question-footer">
+            <label class="required-toggle">
+              <input type="checkbox" class="required-checkbox" checked /> Obligatorio
+            </label>
+            
+            <div class="action-buttons">
+              <button class="action-btn" title="Duplicar pregunta" onclick="duplicateQuestion(this)">⎘</button>
+              <button class="action-btn" title="Añadir imagen" onclick="addImageToQuestion(this)">🖼️</button>
+              <button class="delete-btn" title="Eliminar bloque">🗑️</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sección para mensaje de cierre/agradecimiento -->
+      <div class="closing-message">
+        <div class="closing-title">Mensaje de Cierre/Agradecimiento</div>
+        <div class="format-toolbar">
+          <button class="format-btn" data-command="bold" title="Negrita">N</button>
+        </div>
+        <div class="rich-text-editor" id="closingMessage" contenteditable="true" data-placeholder="Ingresa el mensaje a mostrar después del envío del formulario">¡Gracias! Tu respuesta ha sido registrada exitosamente.</div>
+      </div>
+
+      <div class="footer">
+        <button class="submit-btn" type="button" id="sendToGoogle">Guardar configuración</button>
+      </div>
+
+      <!-- Estado de validación -->
+      <div class="validation-status" id="validationStatus" style="display: none;"></div>
+    </div>
+
+    <div class="sidebar" id="sidebar">
+      <button id="addQuestion" title="Añadir pregunta">+</button>
+      <button id="addText" title="Añadir bloque de texto">T</button>
+      <button style="display: none;" id="addImage" title="Añadir imagen">🖼️</button>
+      <button style="display: none;" id="addSection" title="Añadir sección">≡</button>
+    </div>
+
+    <div class="toast" id="toast"></div>
+  </div>
+
+  <!-- Vista Previa -->
+  <div id="previewView" class="preview-view active">
+    <!-- Contenedor para logo dinámico -->
+    <div id="previewLogoContainer" class="preview-logo-container"></div>
+
+    <!-- Contenedor para encabezado con título, descripción y agradecimientos -->
+    <div id="previewHeaderContainer" class="preview-form-container"></div>
+
+    <!-- Mensaje de error -->
+    <div id="previewErrorMessage" class="preview-error-message" style="display: none;"></div>
+
+    <!-- Contenedor para preguntas -->
+    <div id="previewFormRoot"></div>
+
+    <!-- Botón de envío -->
+    <div class="preview-form-container3">
+        <button type="button" id="previewSubmit" class="preview-button" onclick="previewSend()">Enviar</button>
+    </div>
+
+    <!-- Superposición de carga -->
+    <div id="previewLoadingOverlay" style="display: none;">
+        <div class="overlay-content">
+            <div class="spinner"></div>
+            <div class="loading-text">Cargando...</div>
+        </div>
+    </div>
+  </div>
+
+
+  <!-- Modal de Contraseña -->
+<div id="passwordModal" class="password-modal">
+  <div class="password-modal-content">
+    <h2>Esta parte es solo para el propietario del formulario. Si no eres tú, ¡puedes ignorarla!</h2>
+    <h3>Ingresa la contraseña</h3>
+    <input type="password" id="passwordInput" placeholder="Contraseña" />
+    <div class="modal-buttons">
+      <button id="passwordSubmit">Aceptar</button>
+      <button id="passwordCancel">Cancelar</button>
+    </div>
+    <div id="passwordError" class="password-error">Contraseña incorrecta</div>
+  </div>
+</div>
+
+
+  <script>
+    // URL para cargar configuración
+    const CONFIG_URL = 'https://script.google.com/macros/s/AKfycbzXIrh1IzXpX0EQ6lJV6m8kUCqZH8HiPn2PN7Rui1A_V_aDXY_6KC7_8Xn2tB8IPX8/exec';
+    const SUBMIT_URL = 'https://script.google.com/macros/s/AKfycbzXIrh1IzXpX0EQ6lJV6m8kUCqZH8HiPn2PN7Rui1A_V_aDXY_6KC7_8Xn2tB8IPX8/exec';
+    
+    // Configuración por defecto (en caso de error)
+    const DEFAULT_CONFIG_STRING = `{
+      "logoConfig": {
+        "primaryColor": "#003cff",
+        "logo": {
+          "url": "https://i.ibb.co/3f1GNGW/Logo-Focus.jpg",
+          "alt": "Logo de la Empresa"
+        }
+      },
+      "titleConfig": {
+        "id": "header-title",
+        "title": "ACUERDO DE SERVICIO DE MENSAJERÍA DE TEXTO"
+      },
+      "descriptionConfig": {
+        "id": "header-description",
+        "descriptionHTML": ""
+      },
+      "thanksConfig": {
+        "id": "header-thanks",
+        "thanksHTML": "¡Gracias! Tu respuesta ha sido registrada exitosamente."
+      },
+      "questionsConfig": [
+        {
+          "type": "text",
+          "name": "text_1",
+          "text": "",
+          "placeholder": "Ingresa tu respuesta aquí",
+          "required": true
+        }
+      ]
+    }`;
+
+    // Contadores para nombres automáticos
+    const fieldCounters = {
+      text: 1,
+      radio: 1,
+      checkbox: 1,
+      dropdown: 1,
+      paragraph: 1,
+      date: 1,
+      time: 1,
+      slider: 1,
+      signature: 1,
+      textblock: 1
+    };
+
+
+function disableEditorInputs() {
+  // Todas las entradas y áreas de texto en el editor
+  /* document.querySelectorAll('#editorView input, #editorView textarea, #editorView select').forEach(el => {
+    // Excepto aquellas usadas para editar título/descripción/etc.
+    if (!el.classList.contains('form-title') && !el.classList.contains('form-description')&& el.id !== 'themeColor') {
+      el.setAttribute('disabled', 'true');
+      el.setAttribute('readonly', 'true');
+    }
+  });
+
+  // Lienzos de firma → bloquear con CSS
+  document.querySelectorAll('#editorView canvas').forEach(canvas => {
+    canvas.style.pointerEvents = 'none';
+  });*/
+console.log("");
+}
+
+function enableEditorInputs() {
+  document.querySelectorAll('#editorView input, #editorView textarea, #editorView select').forEach(el => {
+    el.removeAttribute('disabled');
+    el.removeAttribute('readonly');
+  });
+
+  document.querySelectorAll('#editorView canvas').forEach(canvas => {
+    canvas.style.pointerEvents = 'auto';
+  });
+}
+
+
+function showLoading() {
+  document.getElementById("loadingOverlay").style.display = "flex";
+}
+
+function hideLoading() {
+  document.getElementById("loadingOverlay").style.display = "none";
+}
+
+
+    // Variables globales para almacenar configuración
+    let logoConfig, titleConfig, descriptionConfig, thanksConfig, questionsConfig;
+
+    // ====== Cargar configuración inicial ======
+document.addEventListener('DOMContentLoaded', async function() {
+  const loadingOverlay = document.getElementById('loadingOverlay');
+  
+  try {
+    loadingOverlay.style.display = 'flex';
+    const configData = await loadConfig();
+    
+    if (configData) {
+      loadForm(configData); // ✅ generatePreview() ahora se llama dentro de loadForm()
+      showToast('Configuración cargada exitosamente');
+    }
+  } catch (error) {
+    console.error('Error cargando configuración:', error);
+    showToast('Error cargando configuración. Usando configuración por defecto.', true);
+    
+    // Intentar con configuración por defecto
+    try {
+      const defaultConfig = JSON.parse(DEFAULT_CONFIG_STRING);
+      loadForm(defaultConfig);
+    } catch (parseError) {
+      console.error("Error con la configuración por defecto:", parseError);
+    }
+  } finally {
+    loadingOverlay.style.display = 'none';
+    initLogo();
+    initRichTextEditors();
+    initImprovedDragSystem();
+    setupViewToggle();
+    // ❌ NO llamar generatePreview() aquí - ya se llama dentro de loadForm()
+  }
+});
+
+    // ====== Configurar botones de alternancia de vista ======
+    function setupViewToggle() {
+      const editViewBtn = document.getElementById('editViewBtn');
+      const previewViewBtn = document.getElementById('previewViewBtn');
+      const editorView = document.getElementById('editorView');
+      const previewView = document.getElementById('previewView');
+    // Abrir modal en lugar de ir directamente  
+      editViewBtn.addEventListener('click', () => {
+        
+    document.getElementById('passwordModal').style.display = 'flex';
+    document.getElementById('passwordError').style.display = 'none';
+    document.getElementById('passwordInput').value = '';
+      });
+
+
+        // Botón Cancelar
+  document.getElementById('passwordCancel').addEventListener('click', () => {
+    document.getElementById('passwordModal').style.display = 'none';
+  });
+
+
+    // Botón Aceptar
+  document.getElementById('passwordSubmit').addEventListener('click', () => {
+    const input = document.getElementById('passwordInput').value.trim();
+if (input === 'darel2025') {
+  document.getElementById('passwordModal').style.display = 'none';
+  editorView.classList.add('active');
+  previewView.classList.remove('active');
+  editViewBtn.classList.add('active');
+  previewViewBtn.classList.remove('active');
+   document.getElementById('previewViewBtn').style.display="block";
+  
+  disableEditorInputs(); // 🔴 deshabilitar campos de respuesta
+}
+else {
+      // error
+      document.getElementById('passwordError').style.display = 'block';
+    }
+  });
+
+// Permitir Enter en la entrada
+document.getElementById('passwordInput').addEventListener('keyup', (e) => {
+  if (e.key === 'Enter') {
+    document.getElementById('passwordSubmit').click();
+  }
+});
+
+  // Vista previa sin contraseña
+  previewViewBtn.addEventListener('click', () => {
+  editorView.classList.remove('active');
+  previewView.classList.add('active');
+  editViewBtn.classList.remove('active');
+  previewViewBtn.classList.add('active');
+  generatePreview();
+  document.getElementById('previewViewBtn').style.display="none";
+  enableEditorInputs(); // 🔵 restaurar si es necesario
+});
+
+    }
+
+
+    // Genera la vista previa usando directamente la configuración (evita race con el DOM del editor)
+function generatePreviewFromConfig(formData) {
+  if (!formData) return;
+  try {
+    // Aplicar color primario de forma segura
+    applyPrimaryColor((formData.logoConfig && formData.logoConfig.primaryColor) || getComputedStyle(document.documentElement).getPropertyValue('--main-color').trim());
+
+    // Cargar logo
+    loadPreviewLogo((formData.logoConfig && formData.logoConfig.logo && formData.logoConfig.logo.url) || '', (formData.logoConfig && formData.logoConfig.logo && formData.logoConfig.logo.alt) || '');
+
+    // Encabezado
+    createPreviewHeader("previewHeaderContainer", formData.titleConfig || {}, formData.descriptionConfig || {}, formData.thanksConfig || {});
+
+    // Preguntas
+    const previewFormRoot = document.getElementById("previewFormRoot");
+    previewFormRoot.innerHTML = '';
+
+    (formData.questionsConfig || []).forEach(questionConfig => {
+      createPreviewQuestion("previewFormRoot", questionConfig);
+    });
+
+    console.info("Vista previa generada desde configuración (servidor).");
+  } catch (err) {
+    console.error("Error en generatePreviewFromConfig:", err);
+    // Como fallback, intenta la generación normal
+    generatePreview();
+  }
+}
+
+// ====== Generar vista previa ======
+function generatePreview() {
+  // Obtener datos del formulario
+  const formData = serializeForm();
+  
+  // Aplicar color primario
+  applyPrimaryColor(formData.logoConfig.primaryColor);
+
+  // Cargar logo
+  loadPreviewLogo(formData.logoConfig.logo.url, formData.logoConfig.logo.alt);
+
+  // Encabezado
+  createPreviewHeader("previewHeaderContainer", formData.titleConfig, formData.descriptionConfig, formData.thanksConfig);
+
+  // Limpiar preguntas
+  const previewFormRoot = document.getElementById("previewFormRoot");
+  previewFormRoot.innerHTML = '';
+
+  // Crear preguntas
+  formData.questionsConfig.forEach(questionConfig => {
+    createPreviewQuestion("previewFormRoot", questionConfig);
+  });
+
+  // 🔄 Re-render de seguridad para evitar que falten opciones
+  setTimeout(() => {
+    const stillEmpty = [...document.querySelectorAll(".preview-radio-group, .preview-checkbox-group, .preview-select")]
+      .some(el => el.children.length <= 1); // solo "Seleccionar una opción" o vacío
+    if (stillEmpty) {
+      console.warn("⚠️ Algunas opciones no se cargaron, regenerando vista previa...");
+      previewFormRoot.innerHTML = '';
+      formData.questionsConfig.forEach(questionConfig => {
+        createPreviewQuestion("previewFormRoot", questionConfig);
+      });
+    }
+  }, 200);
+}
+
+
+    // ====== Función para aplicar color primario desde configuración JSON ======
+    function applyPrimaryColor(primaryColor) {
+      const root = document.documentElement;
+      
+      // Calcular color hover (oscurecer en 15%)
+      const hoverColor = darkenColor(primaryColor, 15);
+      
+      root.style.setProperty('--main-color', primaryColor);
+      root.style.setProperty('--primary-hover', hoverColor);
+    }
+
+    // ====== Función para oscurecer un color hexadecimal ======
+    function darkenColor(color, percent) {
+      const num = parseInt(color.replace("#", ""), 16);
+      const amt = Math.round(2.55 * percent);
+      const R = (num >> 16) - amt;
+      const G = (num >> 8 & 0x00FF) - amt;
+      const B = (num & 0x0000FF) - amt;
+      
+      return "#" + (
+        0x1000000 +
+        (R < 0 ? 0 : R) * 0x10000 +
+        (G < 0 ? 0 : G) * 0x100 +
+        (B < 0 ? 0 : B)
+      ).toString(16).slice(1);
+    }
+
+    // ====== Función para cargar logo en vista previa ======
+    function loadPreviewLogo(url, alt) {
+      const logoContainer = document.getElementById('previewLogoContainer');
+      logoContainer.innerHTML = ''; // Limpiar contenedor
+      
+      const img = document.createElement('img');
+      img.src = url;
+      img.alt = alt;
+      img.onerror = function() {
+        console.error("Error cargando logo:", this.src);
+        // Intentar cargar un logo de respaldo si el principal falla
+        img.src = 'https://via.placeholder.com/600x120/003cff/ffffff?text=Logo+Placeholder';
+      };
+      
+      logoContainer.appendChild(img);
+    }
+
+    // ====== Función para crear encabezado en vista previa ======
+    function createPreviewHeader(containerId, titleConfig, descriptionConfig, thanksConfig) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = ''; // Limpiar contenedor
+      
+      // Crear contenedor principal
+      const formContainer = document.createElement("div");
+      formContainer.className = "preview-form-container3";
+      
+      // Crear sección de título
+      if (titleConfig.title) {
+        const titleSection = document.createElement("div");
+        titleSection.className = "header-section";
+        
+        const titleElement = document.createElement("div");
+        titleElement.className = "preview-title";
+        titleElement.textContent = titleConfig.title;
+        titleSection.appendChild(titleElement);
+        
+        formContainer.appendChild(titleSection);
+      }
+      
+      // Crear sección de descripción
+      if (descriptionConfig.descriptionHTML) {
+        const descriptionSection = document.createElement("div");
+        descriptionSection.className = "header-section";
+        
+        const descriptionElement = document.createElement("div");
+        descriptionElement.className = "preview-description-container";
+        descriptionElement.innerHTML = descriptionConfig.descriptionHTML;
+        descriptionSection.appendChild(descriptionElement);
+        
+        formContainer.appendChild(descriptionSection);
+      }
+      
+      // Crear sección de agradecimientos (inicialmente oculta)
+      if (thanksConfig.thanksHTML) {
+        const thanksSection = document.createElement("div");
+        thanksSection.className = "header-section";
+        thanksSection.id = "previewThanksSection";
+        thanksSection.style.display = "none";
+        
+        const thanksElement = document.createElement("div");
+        thanksElement.className = "preview-thanks-container";
+        thanksElement.innerHTML = thanksConfig.thanksHTML;
+        thanksSection.appendChild(thanksElement);
+        
+        formContainer.appendChild(thanksSection);
+      }
+      
+      // Ensamblar
+      container.appendChild(formContainer);
+    }
+
+    // ====== Función para crear preguntas en vista previa ======
+// ====== Función para crear preguntas en vista previa ======
+// ====== Función para crear preguntas en vista previa ======
+function createPreviewQuestion(containerId, config) {
+  const container = document.getElementById(containerId);
+
+  // ✅ Parche: asegurar que las opciones existan
+  if (config.type === "radio" || config.type === "checkbox" || config.type === "dropdown") {
+    if (!config.options || !Array.isArray(config.options) || config.options.length === 0) {
+      console.warn(`⚠️ ${config.name} llegó sin opciones, intentando recuperar...`);
+      // Buscar en la configuración global original
+      if (window.questionsConfig && Array.isArray(window.questionsConfig)) {
+        const original = window.questionsConfig.find(q => q.name === config.name);
+        if (original && original.options && original.options.length > 0) {
+          config.options = original.options;
+          console.info(`✅ Opciones restauradas para ${config.name}`, config.options);
+        }
+      }
+    }
+  }
+
+  // Crear contenedor principal
+  const formContainer = document.createElement("div");
+  formContainer.className = "preview-form-container2";
+  formContainer.style.display = config.hidden ? "none" : "block";
+  formContainer.id = `preview-container-${config.name}`;
+  formContainer.dataset.required = config.required || false;
+
+  // Crear bloque de pregunta
+  const questionContainer = document.createElement("div");
+  questionContainer.className = "preview-question-container";
+
+  if (config.text) {
+    const questionText = document.createElement("div");
+    if (config.type === "textblock") {
+      questionText.className = "preview-textblock";
+      questionText.innerHTML = config.text;
+    } else {
+      questionText.className = "preview-question";
+      if (config.required) {
+        questionText.innerHTML = '<span class="preview-required-marker">*</span> ' + config.text;
+
+      } else {
+        questionText.innerHTML = config.text;
+      }
+    }
+    questionContainer.appendChild(questionText);
+  }
+
+  let inputGroup;
+
+  // Diferentes tipos de campo
+  if (config.type === "date") {
+    inputGroup = document.createElement("input");
+    inputGroup.type = "date";
+    inputGroup.className = "preview-input";
+    inputGroup.name = config.name;
+    inputGroup.id = config.name;
+    if (config.required) inputGroup.required = true;
+
+  } else if (config.type === "time") {
+    inputGroup = document.createElement("input");
+    inputGroup.type = "time";
+    inputGroup.className = "preview-input";
+    inputGroup.name = config.name;
+    inputGroup.id = config.name;
+    if (config.required) inputGroup.required = true;
+
+  } else if (config.type === "text") {
+    inputGroup = document.createElement("input");
+    inputGroup.type = "text";
+    inputGroup.className = "preview-input";
+    inputGroup.name = config.name;
+    inputGroup.id = config.name;
+    inputGroup.placeholder = config.placeholder || "";
+    if (config.required) inputGroup.required = true;
+
+  } else if (config.type === "paragraph") {
+    inputGroup = document.createElement("textarea");
+    inputGroup.className = "preview-textarea";
+    inputGroup.name = config.name;
+    inputGroup.id = config.name;
+    inputGroup.placeholder = config.placeholder || "";
+    if (config.required) inputGroup.required = true;
+
+  } else if (config.type === "dropdown") {
+    inputGroup = document.createElement("div");
+
+    const select = document.createElement("select");
+    select.className = "preview-select";
+    select.name = config.name;
+    select.id = config.name;
+    if (config.required) select.required = true;
+
+    const defaultOption = document.createElement("option");
+    defaultOption.value = "";
+    defaultOption.textContent = config.placeholder || "Seleccionar una opción";
+    defaultOption.disabled = true;
+    defaultOption.selected = true;
+    select.appendChild(defaultOption);
+
+    if (config.options && config.options.length > 0) {
+      config.options.forEach(opt => {
+        const option = document.createElement("option");
+        option.value = opt.value;
+        option.textContent = opt.label;
+        select.appendChild(option);
+      });
+    }
+
+    const otherInput = document.createElement("input");
+    otherInput.type = "text";
+    otherInput.className = "preview-input";
+    otherInput.placeholder = "Por favor especifica";
+    otherInput.style.display = "none";
+    otherInput.id = `preview_${config.name}_other`;
+
+    select.addEventListener("change", () => {
+      if (select.value === "otro") {
+        otherInput.style.display = "block";
+        otherInput.required = config.required;
+      } else {
+        otherInput.style.display = "none";
+        otherInput.value = "";
+        otherInput.required = false;
+      }
+    });
+
+    inputGroup.appendChild(select);
+    inputGroup.appendChild(otherInput);
+
+  } else if (config.type === "signature") {
+    inputGroup = document.createElement("div");
+
+    const info = document.createElement("p");
+    info.className = "preview-signature-info";
+    info.innerHTML = config.infoHTML || "";
+
+    const canvas = document.createElement("canvas");
+    canvas.className = "preview-canvas";
+    canvas.id = "preview_" + config.name + "_canvas";
+
+    const clearButton = document.createElement("button");
+    clearButton.type = "button";
+    clearButton.textContent = "Borrar";
+    clearButton.className = "preview-button";
+    clearButton.style.marginTop = "8px";
+
+    inputGroup.appendChild(info);
+    inputGroup.appendChild(canvas);
+    inputGroup.appendChild(document.createElement("br"));
+    inputGroup.appendChild(clearButton);
+
+    setTimeout(() => initPreviewSignaturePad(canvas, clearButton), 0);
+
+  } else if (config.type === "textblock") {
+    inputGroup = document.createElement("div");
+    inputGroup.className = "preview-textblock-content";
+    if (config.contentHTML) {
+      inputGroup.innerHTML = config.contentHTML;
+    }
+
+  } else if (config.type === "radio" || config.type === "checkbox") {
+    inputGroup = document.createElement("div");
+    inputGroup.className = config.type === "checkbox" ? "preview-checkbox-group" : "preview-radio-group";
+
+    if (config.options && config.options.length > 0) {
+      config.options.forEach((opt, i) => {
+        const label = document.createElement("label");
+        const input = document.createElement("input");
+
+        input.type = config.type;
+        input.className = "preview-input";
+        input.id = `preview_${config.name}_${i}`;
+        input.name = config.name;
+        input.value = opt.value;
+        if (config.required) input.required = config.required;
+
+        label.appendChild(input);
+        label.append(` ${opt.label}`);
+
+        if (opt.value === "otro") {
+          const otherInput = document.createElement("input");
+          otherInput.type = "text";
+          otherInput.className = "preview-input";
+          otherInput.placeholder = "Por favor especifica";
+          otherInput.style.display = "none";
+          otherInput.id = `preview_${config.name}_other`;
+
+          input.addEventListener("change", () => {
+            if (config.type === "radio") {
+              otherInput.style.display = input.checked ? "block" : "none";
+              otherInput.required = input.checked && config.required;
+            } else {
+              otherInput.style.display = input.checked ? "block" : "none";
+              otherInput.required = input.checked && config.required;
+            }
+            if (!input.checked) otherInput.value = "";
+          });
+
+          label.appendChild(document.createElement("br"));
+          label.appendChild(otherInput);
+        }
+
+        inputGroup.appendChild(label);
+        inputGroup.appendChild(document.createElement("br"));
+      });
+    }
+  }
+
+  if (config.type !== "textblock") {
+    const warning = document.createElement("div");
+    warning.className = "preview-warning";
+    warning.id = `preview_warning_${config.name}`;
+    warning.textContent = "Este campo es obligatorio";
+    warning.style.display = "none";
+    questionContainer.appendChild(warning);
+  }
+
+  if (inputGroup) {
+    questionContainer.appendChild(inputGroup);
+  }
+  formContainer.appendChild(questionContainer);
+  container.appendChild(formContainer);
+}
+
+    // ====== Función para inicializar lienzo de firma en vista previa ======
+    function initPreviewSignaturePad(canvas, clearButton) {
+      const ctx = canvas.getContext("2d");
+      let drawing = false;
+      let pos = { x: 0, y: 0 };
+      
+      // Ajustar tamaño del lienzo
+      function resizeCanvas() {
+  // Guardar el contenido actual
+  const temp = document.createElement("canvas");
+  temp.width = canvas.width;
+  temp.height = canvas.height;
+  temp.getContext("2d").drawImage(canvas, 0, 0);
+
+  // Cambiar tamaño
+  const width = canvas.offsetWidth;
+  const height = width * 0.6;
+  canvas.width = width;
+  canvas.height = height;
+
+  // Restaurar contenido escalado
+  ctx.drawImage(temp, 0, 0, temp.width, temp.height, 0, 0, canvas.width, canvas.height);
+
+  // Estilos
+  ctx.lineWidth = 3;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.strokeStyle = '#000';
+      }
+      
+      // Establecer posición inicial
+      function setPosition(e) {
+        const rect = canvas.getBoundingClientRect();
+        if (e.touches) {
+          pos.x = e.touches[0].clientX - rect.left;
+          pos.y = e.touches[0].clientY - rect.top;
+        } else {
+          pos.x = e.clientX - rect.left;
+          pos.y = e.clientY - rect.top;
+        }
+      }
+      
+      // Función para dibujar
+      function draw(e) {
+        if (!drawing) return;
+        
+        ctx.beginPath();
+        ctx.moveTo(pos.x, pos.y);
+        setPosition(e);
+        ctx.lineTo(pos.x, pos.y);
+        ctx.stroke();
+      }
+      
+      // Eventos de ratón
+      canvas.addEventListener('mousedown', (e) => {
+        drawing = true;
+        setPosition(e);
+      });
+      
+      canvas.addEventListener('mouseenter', (e) => {
+        if (e.buttons === 1) {
+          drawing = true;
+          setPosition(e);
+        }
+      });
+      
+      canvas.addEventListener('mouseup', () => {
+        drawing = false;
+      });
+      
+      canvas.addEventListener('mousemove', draw);
+      
+      // Eventos táctiles
+      canvas.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        drawing = true;
+        setPosition(e);
+      }, { passive: false });
+      
+      canvas.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        if (!drawing) return;
+        draw(e);
+      }, { passive: false });
+      
+      canvas.addEventListener('touchend', () => {
+        drawing = false;
+      }, { passive: false });
+      
+      // Botón para borrar
+      clearButton.addEventListener('click', () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      });
+      
+      // Inicializar tamaño
+      resizeCanvas();
+      window.addEventListener('resize', resizeCanvas);
+    }
+
+    // ====== Función para enviar desde vista previa ======
+// ====== Función para enviar desde vista previa ======
+// ====== Función para enviar desde vista previa ======
+async function previewSend() {
+  const submitBtn = document.getElementById("previewSubmit");
+  const overlay = document.getElementById("previewLoadingOverlay");
+  const errorDiv = document.getElementById('previewErrorMessage');
+
+  // Ocultar mensajes de error anteriores
+  errorDiv.style.display = 'none';
+  submitBtn.disabled = true;
+
+  let hasError = false;
+  let firstErrorElement = null;
+  const payload = {};
+
+  // Iterar a través de todos los form-container2
+  document.querySelectorAll(".preview-form-container2").forEach(container => {
+    const input = container.querySelector("input, textarea, select, canvas");
+    if (!input) return;
+
+    const name = input.name || container.id;
+    const warning = container.querySelector(".preview-warning");
+    const isRequired = container.dataset.required === "true";
+
+    // Si es un bloque de texto, no procesar como campo de entrada
+    if (container.querySelector(".preview-textblock")) {
+      return;
+    }
+
+    let value;
+    let isEmpty = false;
+
+    if (input.tagName === "CANVAS") {
+      // Manejo de firma
+      const ctx = input.getContext("2d");
+      const imageData = ctx.getImageData(0, 0, input.width, input.height).data;
+      isEmpty = true;
+      
+      for (let i = 0; i < imageData.length; i += 4) {
+        if (imageData[i + 3] !== 0) {
+          isEmpty = false;
+          break;
+        }
+      }
+
+      if (!isEmpty) {
+        value = {
+          filename: `firma_${Date.now()}.png`,
+          mimeType: "image/png",
+          data: input.toDataURL("image/png").split(",")[1]
+        };
+      }
+    } else if (input.type === "radio") {
+      // ✅ BOTONES DE RADIO
+      const checked = container.querySelector("input[type='radio']:checked");
+      isEmpty = !checked;
+
+      if (!isEmpty) {
+        if (checked.value === "otro") {
+          const otherInput = container.querySelector(`#preview_${name}_other`);
+          if (!otherInput || !otherInput.value.trim()) {
+            isEmpty = true; // 🔴 obligatorio si se selecciona Otro
+          } else {
+            value = otherInput.value.trim();
+          }
+        } else {
+          value = checked.value;
+        }
+      } else {
+        value = "";
+      }
+
+    } else if (input.type === "checkbox") {
+      // ✅ CASILLAS DE VERIFICACIÓN
+      const checked = container.querySelectorAll("input[type='checkbox']:checked");
+      isEmpty = checked.length === 0;
+
+      if (!isEmpty) {
+        value = [...checked].map(el => {
+          if (el.value === "otro") {
+            const otherInput = container.querySelector(`#preview_${name}_other`);
+            if (!otherInput || !otherInput.value.trim()) {
+              isEmpty = true; // 🔴 obligatorio si se selecciona Otro
+              return null;
+            }
+            return otherInput.value.trim();
+          }
+          return el.value;
+        }).filter(v => v !== null);
+
+        value = Array.isArray(value) ? value : [value];
+      } else {
+        value = [];
+      }
+
+    } else if (input.tagName === "SELECT") {
+      // ✅ LISTAS DESPLEGABLES
+      isEmpty = input.value === "";
+      value = input.value;
+
+      if (input.value === "otro") {
+        const otherInput = container.querySelector(`#preview_${name}_other`);
+        if (!otherInput || !otherInput.value.trim()) {
+          isEmpty = true; // 🔴 obligatorio si se selecciona Otro
+        } else {
+          value = otherInput.value.trim();
+        }
+      }
+
+    } else {
+      // Texto, área de texto, fecha u hora
+      value = input.value.trim();
+      isEmpty = !value;
+    }
+
+    // Mostrar advertencia solo si el campo es obligatorio y está vacío
+    if (isRequired && isEmpty && warning) {
+      warning.style.display = "block";
+      hasError = true;
+      if (!firstErrorElement) firstErrorElement = container;
+    } else if (warning) {
+      warning.style.display = "none";
+    }
+
+    // ✅ Siempre asignar valor al payload
+    payload[name] = value;
+  });
+
+  if (hasError) {
+    if (firstErrorElement) {
+      firstErrorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    submitBtn.disabled = false;
+    return;
+  }
+
+  showLoading();
+
+  try {
+    console.log("Payload a enviar:", JSON.stringify(payload, null, 2));
+    
+    const response = await fetch(SUBMIT_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'text/plain;charset=utf-8',
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const result = await response.json();
+    console.log("Respuesta del servidor:", result);
+
+    if (result.success) {
+      document.getElementById("previewFormRoot").style.display = "none";
+      document.getElementById("previewSubmit").style.display = "none";
+      document.getElementById("previewThanksSection").style.display = "block";
+    } else {
+      showPreviewError("Error enviando datos: " + result.error);
+    }
+    
+  } catch (err) {
+    console.error("Error enviando datos:", err);
+    showPreviewError("Error de conexión. Por favor intenta de nuevo.");
+  } finally {
+    submitBtn.disabled = false;
+    hideLoading();
+  }
+}
+
+
+
+    document.addEventListener('click', (e) => {
+  if (!e.target.classList.contains('format-btn')) return;
+  const command = e.target.dataset.command;
+  const editor = e.target.closest('.question-header, .form-header, .closing-message')
+                        .querySelector('[contenteditable]');
+  if (editor) {
+    document.execCommand(command, false, null);
+    editor.focus();
+  }
+});
+
+
+    // ====== Función para mostrar errores en vista previa ======
+    function showPreviewError(message) {
+      const errorDiv = document.getElementById('previewErrorMessage');
+      errorDiv.textContent = message;
+      errorDiv.style.display = 'block';
+      
+      // Desplazar hacia arriba para mostrar error
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      
+      // Ocultar error después de 5 segundos
+      setTimeout(() => {
+        errorDiv.style.display = 'none';
+      }, 5000);
+    }
+
+    // ====== Inicializar sistema de arrastre mejorado ======
+    function initImprovedDragSystem() {
+      const questionsDiv = document.getElementById("questions");
+      let dragElement = null;
+      let isDragging = false;
+      let startX, startY;
+      
+      // Añadir manejadores de arrastre a todos los bloques
+      function addDragHandlers() {
+        document.querySelectorAll('.question-block, .text-block, .image-block, .section-block').forEach(block => {
+          const dragHandle = block.querySelector('.drag-handle') || createDragHandle(block);
+          
+          // Configurar eventos para el mango de arrastre
+          dragHandle.addEventListener('mousedown', startDrag);
+          dragHandle.addEventListener('touchstart', startDrag, { passive: false });
+          
+          // Prevenir inicio de arrastre en elementos editables
+          block.querySelectorAll('[contenteditable="true"], input, textarea, select').forEach(element => {
+            element.addEventListener('mousedown', (e) => {
+              e.stopPropagation();
+            });
+            
+            element.addEventListener('touchstart', (e) => {
+              e.stopPropagation();
+            }, { passive: true });
+          });
+        });
+      }
+      
+      // Crear un mango de arrastre si no existe
+      function createDragHandle(block) {
+        const dragHandle = document.createElement('div');
+        dragHandle.className = 'drag-handle';
+        dragHandle.innerHTML = '≡';
+        dragHandle.title = 'Arrastrar bloque';
+        block.insertBefore(dragHandle, block.firstChild);
+        return dragHandle;
+      }
+      
+      // Iniciar arrastre
+      function startDrag(e) {
+        // Solo iniciar arrastre con botón izquierdo del ratón
+        if (e.type === 'mousedown' && e.button !== 0) return;
+        
+        dragElement = this.closest('.question-block, .text-block, .image-block, .section-block');
+        if (!dragElement) return;
+        
+        isDragging = false;
+        startX = e.type === 'mousedown' ? e.clientX : e.touches[0].clientX;
+        startY = e.type === 'mousedown' ? e.clientY : e.touches[0].clientY;
+        
+        // Añadir eventos de movimiento y fin
+        document.addEventListener('mousemove', onDrag);
+        document.addEventListener('touchmove', onDrag, { passive: false });
+        document.addEventListener('mouseup', stopDrag);
+        document.addEventListener('touchend', stopDrag);
+        
+        e.preventDefault();
+        if (e.type === 'touchstart') e.preventDefault();
+      }
+      
+      // Durante el arrastre
+      function onDrag(e) {
+        if (!dragElement) return;
+        
+        const currentX = e.type === 'mousemove' ? e.clientX : e.touches[0].clientX;
+        const currentY = e.type === 'mousemove' ? e.clientY : e.touches[0].clientY;
+        
+        // Verificar si el movimiento es suficiente para considerarse arrastre
+        if (!isDragging) {
+          const dx = Math.abs(currentX - startX);
+          const dy = Math.abs(currentY - startY);
+          
+          // Solo iniciar arrastre si el movimiento es mayor al umbral
+          if (dx > 5 || dy > 5) {
+            isDragging = true;
+            dragElement.classList.add('dragging');
+            
+            // Crear elemento fantasma para arrastre
+            const rect = dragElement.getBoundingClientRect();
+            const ghost = dragElement.cloneNode(true);
+            ghost.style.position = 'fixed';
+            ghost.style.width = `${rect.width}px`;
+            ghost.style.height = `${rect.height}px`;
+            ghost.style.left = `${rect.left}px`;
+            ghost.style.top = `${rect.top}px`;
+            ghost.style.zIndex = '1000';
+            ghost.style.opacity = '0.8';
+            ghost.style.pointerEvents = 'none';
+            ghost.id = 'ghost-element';
+            document.body.appendChild(ghost);
+          }
+        }
+        
+        if (isDragging) {
+          e.preventDefault();
+          
+          // Mover elemento fantasma
+          const ghost = document.getElementById('ghost-element');
+          if (ghost) {
+            ghost.style.left = `${currentX - 50}px`;
+            ghost.style.top = `${currentY - 20}px`;
+          }
+          
+          // Encontrar elemento después del cual insertar
+          const afterElement = getDragAfterElement(questionsDiv, currentY);
+          if (afterElement == null) {
+            questionsDiv.appendChild(dragElement);
+          } else {
+            questionsDiv.insertBefore(dragElement, afterElement);
+          }
+        }
+      }
+      
+      // Detener arrastre
+      function stopDrag() {
+        if (dragElement && isDragging) {
+          dragElement.classList.remove('dragging');
+        }
+        
+        // Eliminar elemento fantasma
+        const ghost = document.getElementById('ghost-element');
+        if (ghost) {
+          document.body.removeChild(ghost);
+        }
+        
+        // Limpiar variables y eventos
+        dragElement = null;
+        isDragging = false;
+        
+        document.removeEventListener('mousemove', onDrag);
+        document.removeEventListener('touchmove', onDrag);
+        document.removeEventListener('mouseup', stopDrag);
+        document.removeEventListener('touchend', stopDrag);
+      }
+      
+      // Encontrar elemento después del cual insertar
+      function getDragAfterElement(container, y) {
+        const draggableElements = [...container.querySelectorAll(".question-block:not(.dragging), .section-block:not(.dragging), .text-block:not(.dragging), .image-block:not(.dragging)")];
+        
+        return draggableElements.reduce((closest, child) => {
+          const box = child.getBoundingClientRect();
+          const offset = y - box.top - box.height / 2;
+          if (offset < 0 && offset > closest.offset) {
+            return { offset: offset, element: child };
+          } else {
+            return closest;
+          }
+        }, { offset: Number.NEGATIVE_INFINITY }).element;
+      }
+      
+      // Inicializar manejadores de arrastre
+      addDragHandlers();
+      
+      // Observar cambios en el DOM para añadir manejadores a nuevos elementos
+      const observer = new MutationObserver(addDragHandlers);
+      observer.observe(questionsDiv, { childList: true, subtree: true });
+    }
+
+    // ====== Inicializar editores de texto enriquecido ======
+    function initRichTextEditors() {
+      // Configurar placeholders para editores de contenido editable
+      document.querySelectorAll('[contenteditable][data-placeholder]').forEach(editor => {
+        const placeholder = editor.getAttribute('data-placeholder');
+        
+        // Establecer placeholder inicial si está vacío
+        if (!editor.textContent.trim()) {
+          editor.innerHTML = '';
+          editor.classList.add('placeholder');
+        }
+        
+        // Manejar enfoque
+        editor.addEventListener('focus', function() {
+          if (this.classList.contains('placeholder')) {
+            this.innerHTML = '';
+            this.classList.remove('placeholder');
+          }
+        });
+        
+        editor.addEventListener('blur', function() {
+          if (!this.textContent.trim()) {
+            this.innerHTML = '';
+            this.classList.add('placeholder');
+          }
+        });
+      });
+      
+      // Configurar botones de formato
+      document.querySelectorAll('.format-btn').forEach(button => {
+        button.addEventListener('click', function() {
+          const command = this.dataset.command;
+          const editor = this.closest('.question-header, .form-header, .closing-message')
+            .querySelector('[contenteditable]');
+          
+          if (editor) {
+            document.execCommand(command, false, null);
+            editor.focus();
+          }
+        });
+      });
+    }
+
+    // ====== Función para cargar configuración ======
+    async function loadConfig() {
+      try {
+        const response = await fetch(CONFIG_URL);
+        if (!response.ok) throw new Error(`Error HTTP! estado: ${response.status}`);
+        
+        const result = await response.json();
+        console.log("Respuesta del servidor:", result);
+        
+        if (!result.success) {
+          throw new Error(result.message);
+        }
+        
+        const configData = JSON.parse(result.config);
+        return configData;
+        
+      } catch (error) {
+        console.error("Error cargando configuración desde URL:", error);
+        console.log("Usando configuración por defecto...");
+        
+        try {
+          return JSON.parse(DEFAULT_CONFIG_STRING);
+        } catch (parseError) {
+          console.error("Error analizando configuración por defecto:", parseError);
+          showError("Error cargando configuración del formulario. Por favor intenta más tarde.");
+          return null;
+        }
+      }
+    }
+
+    // ====== Inicialización del logo ======
+    function initLogo() {
+      const logoUrlInput = document.getElementById('logoUrl');
+      const logoPreview = document.getElementById('logoPreview');
+      
+      // Actualizar vista previa del logo
+      function updateLogoPreview() {
+        const url = logoUrlInput.value.trim();
+        if (url) {
+          logoPreview.innerHTML = `<img src="${url}" alt="Logo" onerror="this.style.display='none'; logoPreview.innerHTML='<span style=color:#999;font-size:12px;>Imagen inválida</span>';" />`;
+        } else {
+          logoPreview.innerHTML = '<span style="color: #999; font-size: 12px;">Vista previa del logo</span>';
+        }
+      }
+      
+      // Evento para actualizar vista previa cuando cambia la URL
+      logoUrlInput.addEventListener('input', updateLogoPreview);
+      
+      // Inicializar vista previa
+      updateLogoPreview();
+    }
+
+    // ====== Mostrar notificación ======
+    function showToast(message, isError = false) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.style.backgroundColor = isError ? '#d93025' : '#333';
+      toast.classList.add('show');
+      
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+
+    // ====== Creadores de bloques ======
+    function createQuestionBlock(type = "text") {
+      const count = fieldCounters[type]++;
+      const fieldName = `${type}_${count}`;
+      
+      const block = document.createElement("div");
+      block.className = "question-block";
+      block.dataset.type = type;
+      block.dataset.name = fieldName;
+      
+      block.innerHTML = `
+        <div class="drag-handle" title="Arrastrar bloque">≡</div>
+        <div class="question-header">
+          <div class="format-toolbar">
+            <button class="format-btn" data-command="bold" title="Negrita">N</button>
+          </div>
+          <div class="rich-text-editor question-input" contenteditable="true" data-placeholder="Ingresa la pregunta aquí"></div>
+          <select class="type-select">
+            <option value="radio">Opción múltiple</option>
+            <option value="checkbox">Casillas de verificación</option>
+            <option value="dropdown">Lista desplegable</option>
+            <option value="text" ${type === "text" ? "selected" : ""}>Respuesta corta</option>
+            <option value="paragraph" ${type === "paragraph" ? "selected" : ""}>Párrafo</option>
+            
+            <option value="date" ${type === "date" ? "selected" : ""}>Fecha</option>
+            <option value="time" ${type === "time" ? "selected" : ""}>Hora</option>
+          
+            <option value="signature" ${type === "signature" ? "selected" : ""}>Firma</option>
+          </select>
+        </div>
+        
+        <div class="question-body">
+          <input type="text" class="short-answer-input" placeholder="Ingresa tu respuesta aquí">
+          <div class="name-display">Nombre del campo: ${fieldName}</div>
+        </div>
+        
+        <div class="question-footer">
+          <label class="required-toggle">
+            <input type="checkbox" class="required-checkbox" /> Obligatorio
+          </label>
+          
+          <div class="action-buttons">
+            <button class="action-btn" title="Duplicar pregunta" onclick="duplicateQuestion(this)">⎘</button>
+            
+            <button class="delete-btn" title="Eliminar bloque">🗑️</button>
+          </div>
+        </div>
+      `;
+      
+      // Establecer tipo correcto
+      setTimeout(() => {
+        const select = block.querySelector(".type-select");
+        select.value = type;
+        const event = new Event('change', { bubbles: true });
+        select.dispatchEvent(event);
+        
+        // Inicializar editor de texto enriquecido
+        initRichTextEditors();
+      }, 0);
+      
+      return block;
+    }
+
+    function createTextBlock() {
+      const count = fieldCounters['textblock']++;
+      const fieldName = `textblock_${count}`;
+      
+      const block = document.createElement("div");
+      block.className = "text-block";
+      block.dataset.type = "textblock";
+      block.dataset.name = fieldName;
+      
+      block.innerHTML = `
+        <div class="drag-handle" title="Arrastrar bloque">≡</div>
+        <div class="question-header">
+          <div class="format-toolbar">
+            <button class="format-btn" data-command="bold" title="Negrita">N</button>
+          </div>
+          <div class="rich-text-editor" contenteditable="true" data-placeholder="Escribe texto aquí"></div>
+          <button class="delete-btn" aria-label="Eliminar bloque">🗑️</button>
+        </div>
+        <div class="name-display">Nombre del campo: ${fieldName}</div>
+      `;
+      
+      // Inicializar editor de texto enriquecido
+      setTimeout(() => {
+        initRichTextEditors();
+      }, 0);
+      
+      return block;
+    }
+
+    function createImageBlock() {
+      const block = document.createElement("div");
+      block.className = "image-block";
+      block.innerHTML = `
+        <div class="drag-handle" title="Arrastrar bloque">≡</div>
+        <div class="question-header">
+          <input type="file" accept="image/*" class="image-upload" />
+          <button class="delete-btn" aria-label="Eliminar bloque">🗑️</button>
+        </div>
+        <div class="image-preview"></div>
+      `;
+      const input = block.querySelector(".image-upload");
+      const preview = block.querySelector(".image-preview");
+      input.addEventListener("change", () => {
+        const file = input.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            preview.innerHTML = `<img src="${e.target.result}" style="max-width:100%; border-radius:8px;" />`;
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+      return block;
+    }
+
+    function createSectionBlock() {
+      const block = document.createElement("div");
+      block.className = "section-block";
+      block.innerHTML = `
+        <div class="drag-handle" title="Arrastrar bloque">≡</div>
+        <input class="section-title" type="text" value="Nueva sección" />
+        <div class="format-toolbar">
+          <button class="format-btn" data-command="bold" title="Negrita">N</button>
+        </div>
+        <div class="rich-text-editor" contenteditable="true" data-placeholder="Descripción de la sección"></div>
+        <button class="delete-btn" aria-label="Eliminar sección">🗑️</button>
+      `;
+      
+      // Inicializar editor de texto enriquecido
+      setTimeout(() => {
+        initRichTextEditors();
+      }, 0);
+      
+      return block;
+    }
+
+    // ====== Barra lateral: añadir bloques ======
+    document.getElementById("addQuestion").addEventListener("click", () => {
+      document.getElementById("questions").appendChild(createQuestionBlock());
+    });
+    document.getElementById("addText").addEventListener("click", () => {
+      document.getElementById("questions").appendChild(createTextBlock());
+    });
+    document.getElementById("addImage").addEventListener("click", () => {
+      document.getElementById("questions").appendChild(createImageBlock());
+    });
+    document.getElementById("addSection").addEventListener("click", () => {
+      document.getElementById("questions").appendChild(createSectionBlock());
+    });
+
+    // ====== Cambiar tipo de pregunta (delegado) ======
+    document.getElementById("questions").addEventListener("change", (e) => {
+      if (!e.target.classList.contains("type-select")) return;
+
+      const block = e.target.closest(".question-block");
+      const questionBody = block.querySelector(".question-body");
+      const addOptionLink = block.querySelector(".add-option");
+      const type = e.target.value;
+      
+      // Actualizar tipo y nombre en dataset
+      const oldType = block.dataset.type;
+      const oldName = block.dataset.name;
+      
+      // Extraer número del nombre anterior
+      const numberMatch = oldName.match(/\d+$/);
+      const fieldNumber = numberMatch ? numberMatch[0] : fieldCounters[type]++;
+      
+      // Generar nuevo nombre
+      const newName = `${type}_${fieldNumber}`;
+      block.dataset.type = type;
+      block.dataset.name = newName;
+      
+      // Actualizar visualización del nombre (aunque esté oculta)
+      const nameDisplay = block.querySelector(".name-display");
+      if (nameDisplay) {
+        nameDisplay.textContent = `Nombre del campo: ${newName}`;
+      }
+
+      if (!questionBody) return;
+      
+      // Guardar placeholder actual si existe
+      const currentInput = block.querySelector(".short-answer-input, .paragraph-input");
+      const currentPlaceholder = currentInput ? currentInput.placeholder : "";
+      
+      // Limpiar cuerpo de la pregunta pero mantener entrada y visualización del nombre
+      const inputElement = block.querySelector(".short-answer-input, .paragraph-input");
+      const nameDisplayElement = block.querySelector(".name-display");
+      
+      questionBody.innerHTML = '';
+      
+      // Reinsertar elementos
+      if (inputElement) {
+        questionBody.appendChild(inputElement);
+      }
+      if (nameDisplayElement) {
+        questionBody.appendChild(nameDisplayElement);
+      }
+      if (["radio", "checkbox","dropdown"].includes(type)) {
+  const addOtherLink = document.createElement("div");
+  addOtherLink.textContent = "Añadir 'Otro'";
+  addOtherLink.className = "add-other";
+
+
+  questionBody.appendChild(addOtherLink);
+}
+
+
+      // Mostrar u ocultar campo de placeholder según el tipo
+      if (["text", "paragraph"].includes(type)) {
+        inputElement.style.display = "block";
+        
+        // Cambiar tipo de entrada según tipo de campo
+        if (type === "paragraph") {
+          inputElement.className = "paragraph-input";
+          inputElement.placeholder = "Ingresa tu respuesta aquí";
+          inputElement.rows = 4;
+        } else {
+          inputElement.className = "short-answer-input";
+          inputElement.placeholder = "Ingresa tu respuesta aquí";
+          inputElement.removeAttribute("rows");
+        }
+      } else {
+        inputElement.style.display = "none";
+      }
+
+      const showAdd = (show) => {
+        if (addOptionLink) addOptionLink.style.display = show ? "block" : "none";
+      };
+
+      if (type === "text") {
+        questionBody.innerHTML += `
+          <div class="short-answer-text">Respuesta corta</div>
+        `;
+        showAdd(false);
+      } else if (type === "file") {
+        questionBody.innerHTML += `<input type="file" style="margin:8px 0;" />`;
+        showAdd(false);
+      } else if (type === "date") {
+        questionBody.innerHTML += `<input type="date" style="margin:8px 0; padding:4px; border:1px solid #ccc; border-radius:4px;" />`;
+        showAdd(false);
+      } else if (type === "time") {
+        questionBody.innerHTML += `<input type="time" style="margin:8px 0; padding:4px; border:1px solid #ccc; border-radius:4px;" />`;
+        showAdd(false);
+      } else if (type === "signature") {
+        questionBody.innerHTML += `
+          <div style="margin:10px 0;">
+            <canvas class="signature-canvas" width="400" height="150" style="border:1px solid #ccc; border-radius:4px; background:#fff; cursor:crosshair;"></canvas><br />
+            <button type="button" class="erase-signature" style="margin-top:6px; padding:4px 10px; border:1px solid #ccc; border-radius:4px; cursor:pointer;">Borrar</button>
+          </div>
+        `;
+        showAdd(false);
+
+        const canvas = block.querySelector(".signature-canvas");
+        const eraseBtn = block.querySelector(".erase-signature");
+        const ctx = canvas.getContext("2d");
+        let drawing = false;
+
+        const getX = (ev) => ev.offsetX ?? (ev.touches[0].clientX - canvas.getBoundingClientRect().left);
+        const getY = (ev) => ev.offsetY ?? (ev.touches[0].clientY - canvas.getBoundingClientRect().top);
+
+        function startDraw(ev) { drawing = true; ctx.beginPath(); ctx.moveTo(getX(ev), getY(ev)); }
+        function draw(ev) { if (!drawing) return; ctx.lineWidth = 2; ctx.lineCap = "round"; ctx.strokeStyle = "#000"; ctx.lineTo(getX(ev), getY(ev)); ctx.stroke(); }
+        function stopDraw() { drawing = false; ctx.closePath(); }
+
+        // Ratón
+        canvas.addEventListener("mousedown", startDraw);
+        canvas.addEventListener("mousemove", draw);
+        canvas.addEventListener("mouseup", stopDraw);
+        canvas.addEventListener("mouseout", stopDraw);
+        // Táctil
+        canvas.addEventListener("touchstart", (ev) => { ev.preventDefault(); startDraw(ev); }, { passive: false });
+        canvas.addEventListener("touchmove", (ev) => { ev.preventDefault(); draw(ev); }, { passive: false });
+        canvas.addEventListener("touchend", stopDraw);
+
+        eraseBtn.addEventListener("click", () => { ctx.clearRect(0, 0, canvas.width, canvas.height); });
+      } else if (type === "slider") {
+        questionBody.innerHTML += `
+          <label style="font-size:14px; color:#5f6368;">Mín: <input type="number" class="slider-min" value="0" style="width:60px; margin-right:10px;"> Máx: <input type="number" class="slider-max" value="100" style="width:60px; margin-right:10px;"></label>
+          <br>
+          <label style="font-size:13px; margin-left:10px;"><input type="checkbox" class="slider-show-value" checked> Mostrar valor</label>
+          <br>
+          <input type="range" min="0" max="100" value="50" class="slider-preview" style="width:80%; margin-top:10px;">
+          <br>
+          <span class="slider-value" style="margin-left:8px; font-weight:bold; color:#202124;">50</span>
+        `;
+        showAdd(false);
+
+        const minInput = block.querySelector(".slider-min");
+        const maxInput = block.querySelector(".slider-max");
+        const slider = block.querySelector(".slider-preview");
+        const valueSpan = block.querySelector(".slider-value");
+        const showValueCheckbox = block.querySelector(".slider-show-value");
+
+        function normalize() {
+          let min = Number(minInput.value || 0);
+          let max = Number(maxInput.value || 100);
+          if (max < min) [min, max] = [max, min];
+          minInput.value = String(min);
+          maxInput.value = String(max);
+          slider.min = min;
+          slider.max = max;
+          if (Number(slider.value) < min) slider.value = String(min);
+          if (Number(slider.value) > max) slider.value = String(max);
+          valueSpan.textContent = slider.value;
+        }
+        slider.addEventListener("input", () => { valueSpan.textContent = slider.value; });
+        showValueCheckbox.addEventListener("change", () => { valueSpan.style.display = showValueCheckbox.checked ? "inline" : "none"; });
+        minInput.addEventListener("input", normalize);
+        maxInput.addEventListener("input", normalize);
+        normalize();
+      } else if (type === "paragraph") {
+        questionBody.innerHTML += `
+          <div class="short-answer-text">Respuesta larga</div>
+        `;
+        showAdd(false);
+      } else if (type === "dropdown") {
+        questionBody.innerHTML += `
+          <div class="options">
+            <div class="option">
+              <span>1.</span>
+              <input type="text" class="option-text" value="Opción 1" placeholder="Valor de opción" />
+              <span class="delete-btn" title="Eliminar opción">✖</span>
+            </div>
+            <div class="option">
+              <span>2.</span>
+              <input type="text" class="option-text" value="Opción 2" placeholder="Valor de opción" />
+              <span class="delete-btn" title="Eliminar opción">✖</span>
+            </div>
+          </div>
+          <div class="add-option">+ Añadir opción</div>
+        `;
+        showAdd(true);
+      } else {
+        // radio / checkbox - AHORA CON BOTONES ELIMINAR
+        questionBody.innerHTML += `
+          <div class="options">
+            <div class="option">
+              <input type="${type}" name="${newName}" />
+              <input type="text" class="option-text" value="Opción 1" placeholder="Valor de opción" />
+              <span class="delete-btn" title="Eliminar opción">✖</span>
+            </div>
+            <div class="option">
+              <input type="${type}" name="${newName}" />
+              <input type="text" class="option-text" value="Opción 2" placeholder="Valor de opción" />
+              <span class="delete-btn" title="Eliminar opción">✖</span>
+            </div>
+          </div>
+          <div class="add-option">+ Añadir opción</div>
+        `;
+        showAdd(true);
+      }
+      
+      // Restaurar valor del placeholder
+      if (inputElement && currentPlaceholder) {
+        inputElement.placeholder = currentPlaceholder;
+      }
+    });
+
+
+// Evento delegado para "Añadir otro" en el editor
+// Evento delegado para "Añadir otro" en el editor (REEMPLAZADO)
+document.getElementById("questions").addEventListener("click", (e) => {
+  if (!e.target.classList.contains("add-other")) return;
+  e.preventDefault();
+
+  const block = e.target.closest(".question-block");
+  if (!block) return;
+  const optionsContainer = block.querySelector(".options");
+  if (!optionsContainer) return;
+
+  const type = block.dataset.type || block.querySelector('.type-select')?.value;
+
+  if (type === "dropdown") {
+    // Lista desplegable: NO mostrar radio, mostrar número + texto + botón eliminar
+    const optionCount = optionsContainer.querySelectorAll(".option").length + 1;
+    const optionDiv = document.createElement("div");
+    optionDiv.className = "option";
+    optionDiv.innerHTML = `
+      <span>${optionCount}.</span>
+      <input type="text" class="option-text" value="Otro" />
+      <span class="delete-btn" title="Eliminar opción">✖</span>
+    `;
+    optionsContainer.appendChild(optionDiv);
+  } else {
+    // Radio/Casilla: mostrar entrada decorativa + texto editable + eliminar
+    const qName = block.dataset.name || `${type}_${fieldCounters[type] ? fieldCounters[type]++ : 1}`;
+    const optionDiv = document.createElement("div");
+    optionDiv.className = "option";
+    optionDiv.innerHTML = `
+      <input type="${type === 'checkbox' ? 'checkbox' : 'radio'}" name="${qName}" disabled />
+      <input type="text" class="option-text" value="Otro" />
+      <span class="delete-btn" title="Eliminar opción">✖</span>
+    `;
+    optionsContainer.appendChild(optionDiv);
+  }
+});
+
+
+
+
+    // ====== "+ Añadir opción" y eliminar (delegado) ======
+    document.getElementById("questions").addEventListener("click", (e) => {
+      // Añadir opción
+      if (e.target.classList.contains("add-option")) {
+        const block = e.target.closest(".question-block");
+        const optionsDiv = block.querySelector(".options");
+        const select = block.querySelector(".type-select");
+        const type = select ? select.value : null;
+        if (!optionsDiv || !type) return;
+
+        // Tipos sin opciones
+        if (["text", "paragraph", "file", "date", "time", "signature", "slider"].includes(type)) return;
+
+        if (type === "dropdown") {
+          const optionCount = optionsDiv.querySelectorAll(".option").length + 1;
+          const newOption = document.createElement("div");
+          newOption.className = "option";
+          newOption.innerHTML = `
+            <span>${optionCount}.</span>
+            <input type="text" class="option-text" value="Nueva opción" placeholder="Valor de opción" />
+            <span class="delete-btn" title="Eliminar opción">✖</span>
+          `;
+          optionsDiv.appendChild(newOption);
+        } else {
+          const qName = block.dataset.name || `${type}_${fieldCounters[type]++}`;
+          const newOption = document.createElement("div");
+          newOption.className = "option";
+          newOption.innerHTML = `
+            <input type="${type}" name="${qName}" />
+            <input type="text" class="option-text" value="Nueva opción" placeholder="Valor de opción" />
+            <span class="delete-btn" title="Eliminar opción">✖</span>
+          `;
+          optionsDiv.appendChild(newOption);
+        }
+      }
+
+      // Eliminar opción o bloque/sección
+      if (e.target.classList.contains("delete-btn")) {
+        const option = e.target.closest(".option");
+        if (option) {
+          const optionsDiv = e.target.closest(".options");
+          option.remove();
+          if (optionsDiv) {
+            // Renumerar opciones si es lista desplegable
+            const numbered = optionsDiv.querySelectorAll(".option > span:first-child");
+            if (numbered.length) numbered.forEach((s, i) => (s.textContent = `${i + 1}.`));
+          }
+        } else {
+          const block = e.target.closest(".question-block, .section-block, .text-block, .image-block");
+          if (block) block.remove();
+        }
+      }
+    });
+
+    // ====== Funciones para nuevos botones ======
+    function duplicateQuestion(button) {
+      const question = button.closest(".question-block");
+      const type = question.dataset.type;
+      const clonedQuestion = createQuestionBlock(type);
+      
+      // Copiar contenido de la pregunta
+      const originalEditor = question.querySelector(".rich-text-editor.question-input");
+      const clonedEditor = clonedQuestion.querySelector(".rich-text-editor.question-input");
+      if (originalEditor && clonedEditor) {
+        clonedEditor.innerHTML = originalEditor.innerHTML;
+      }
+      
+      // Copiar placeholder si existe
+      const originalInput = question.querySelector(".short-answer-input, .paragraph-input");
+      const clonedInput = clonedQuestion.querySelector(".short-answer-input, .paragraph-input");
+      if (originalInput && clonedInput) {
+        clonedInput.placeholder = originalInput.placeholder;
+      }
+      
+      // Copiar estado obligatorio
+      clonedQuestion.querySelector(".required-checkbox").checked = question.querySelector(".required-checkbox").checked;
+      
+      // Insertar después de la pregunta actual
+      question.parentNode.insertBefore(clonedQuestion, question.nextSibling);
+    }
+
+    function addImageToQuestion(button) {
+      const question = button.closest(".question-block");
+      const questionBody = question.querySelector(".question-body");
+      
+      // Crear entrada de archivo
+      const fileInput = document.createElement('input');
+      fileInput.type = 'file';
+      fileInput.accept = 'image/*';
+      fileInput.style.display = 'none';
+      
+      // Añadir al DOM y simular clic
+      document.body.appendChild(fileInput);
+      fileInput.click();
+      
+      // Manejar selección de archivo
+      fileInput.addEventListener('change', function() {
+        if (this.files && this.files[0]) {
+          const reader = new FileReader();
+          
+          reader.onload = function(e) {
+            // Crear elemento de imagen
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.style.maxWidth = '100%';
+            img.style.marginTop = '16px';
+            img.style.borderRadius = '4px';
+            
+            // Insertar imagen en el cuerpo de la pregunta
+            questionBody.appendChild(img);
+          }
+          
+          reader.readAsDataURL(this.files[0]);
+        }
+        
+        // Limpiar
+        document.body.removeChild(fileInput);
+      });
+    }
+
+// ====== Enviar a Google Apps Script ======
+document.getElementById("sendToGoogle").addEventListener("click", async () => {
+  const data = serializeForm();
+  const toast = document.getElementById("toast");
+
+  // 🔴 Añadir bandera para que el backend sepa que es configuración
+  data._type = "config";
+
+  try {
+    toast.textContent = "Guardando formulario...";
+    toast.classList.add("show");
+   
+
+    const response = await fetch("https://script.google.com/macros/s/AKfycbzXIrh1IzXpX0EQ6lJV6m8kUCqZH8HiPn2PN7Rui1A_V_aDXY_6KC7_8Xn2tB8IPX8/exec", {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(data)
+    });
+
+    const result = await response.json();
+
+    // 🔵 Tu backend retorna { success: true }, no "status"
+    if (result.success) {
+      toast.textContent = result.message || "Configuración guardada exitosamente";
+    } else {
+      throw new Error(result.message || "Error guardando configuración");
+    }
+
+    setTimeout(() => toast.classList.remove("show"), 3000);
+  } catch (error) {
+    console.error("Error:", error);
+    toast.textContent = error.message;
+    setTimeout(() => toast.classList.remove("show"), 3000);
+  }
+});
+
+function serializeForm() {
+  const formData = {
+    logoConfig: {
+      primaryColor: document.getElementById("themeColor").value,
+      logo: {
+        url: document.getElementById("logoUrl").value.trim(),
+        alt: "Logo de la Empresa"
+      }
+    },
+    titleConfig: {
+      id: "header-title",
+      title: document.querySelector(".form-title").value.trim()
+    },
+    descriptionConfig: {
+      id: "header-description",
+      descriptionHTML: document.getElementById("formDescription").innerHTML
+    },
+    thanksConfig: {
+      id: "header-thanks",
+      thanksHTML: document.getElementById("closingMessage").innerHTML
+    },
+    questionsConfig: []
+  };
+
+  document.querySelectorAll("#questions > .question-block, #questions > .text-block, #questions > .image-block, #questions > .section-block").forEach(block => {
+    const type = block.dataset.type;
+    const name = block.dataset.name;
+    const required = block.querySelector(".required-checkbox")?.checked || false;
+
+    if (type === "text" || type === "paragraph" || type === "date" || type === "time" || type === "signature") {
+      formData.questionsConfig.push({
+        type,
+        name,
+        text: block.querySelector(".question-input")?.innerHTML || "",
+        placeholder: block.querySelector(".short-answer-input, .paragraph-input")?.placeholder || "",
+        required
+      });
+
+    } else if (type === "radio" || type === "checkbox" || type === "dropdown") {
+      const options = [];
+
+      // tomar todas las opciones escritas en el editor
+      block.querySelectorAll(".option-text").forEach(input => {
+        const text = (input.value || input.textContent || "").trim();
+        if (text) {
+          options.push({
+            value: text.toLowerCase().replace(/\s+/g, "_"),
+            label: text
+          });
+        }
+      });
+
+      // si existe la opción especial "Otro"
+      if (block.querySelector(".option-other")) {
+        options.push({ value: "other", label: "Otro" });
+      }
+
+      formData.questionsConfig.push({
+        type,
+        name,
+        text: block.querySelector(".question-input")?.innerHTML || "",
+        options,
+        required
+      });
+
+    } else if (type === "textblock") {
+      formData.questionsConfig.push({
+        type,
+        name,
+        text: block.querySelector(".rich-text-editor")?.innerHTML || ""
+      });
+
+    } else if (type === "section") {
+      formData.questionsConfig.push({
+        type,
+        name,
+        title: block.querySelector(".section-title")?.value || "",
+        description: block.querySelector(".rich-text-editor")?.innerHTML || ""
+      });
+    }
+  });
+
+  return formData;
+}
+
+
+    // Función para mostrar información de validación
+    function showValidationInfo(data) {
+      const validationStatus = document.getElementById('validationStatus');
+      const requiredFields = data.questionsConfig.filter(q => q.required);
+      
+      if (requiredFields.length > 0) {
+        
+        validationStatus.className = 'validation-status status-ok';
+      } else {
+        
+        validationStatus.className = 'validation-status status-error';
+      }
+    }
+
+function loadForm(data) {
+  // Tema
+  if (data.logoConfig && data.logoConfig.primaryColor) {
+    document.documentElement.style.setProperty('--main-color', data.logoConfig.primaryColor);
+    document.getElementById('themeColor').value = data.logoConfig.primaryColor;
+  }
+  
+  // Logo
+  if (data.logoConfig && data.logoConfig.logo && data.logoConfig.logo.url) {
+    document.getElementById('logoUrl').value = data.logoConfig.logo.url;
+    const logoPreview = document.getElementById('logoPreview');
+    logoPreview.innerHTML = `<img src="${data.logoConfig.logo.url}" alt="Logo" onerror="this.style.display='none'; logoPreview.innerHTML='<span style=color:#999;font-size:12px;>Imagen inválida</span>';" />`;
+  }
+  
+  // Encabezado
+  if (data.titleConfig) {
+    document.querySelector(".form-title").value = data.titleConfig.title || "";
+  }
+  if (data.descriptionConfig) {
+    document.getElementById('formDescription').innerHTML = data.descriptionConfig.descriptionHTML || "";
+  }
+  
+  // Mensaje de cierre
+  if (data.thanksConfig && data.thanksConfig.thanksHTML) {
+    document.getElementById('closingMessage').innerHTML = data.thanksConfig.thanksHTML;
+  }
+
+  // Contenido
+  const container = document.getElementById("questions");
+  container.innerHTML = "";
+  
+  // Reiniciar contadores
+  for (const key in fieldCounters) {
+    fieldCounters[key] = 1;
+  }
+
+  // Función auxiliar para crear bloques de manera síncrona
+  const createBlockWithOptions = (q) => {
+    return new Promise((resolve) => {
+      let frontendType = q.type;
+      if (q.type === "textarea") frontendType = "paragraph";
+      
+      let block;
+      
+      if (q.type === "textblock") {
+        // Código para bloque de texto (mantener igual)
+        block = createTextBlock();
+        const editor = block.querySelector(".rich-text-editor");
+        if (editor && q.text) {
+          editor.innerHTML = q.text;
+          editor.classList.remove('placeholder');
+        }
+      } else {
+        // Crear bloque de pregunta normal
+        block = createQuestionBlock(frontendType);
+        
+        // Establecer valores básicos
+        const editor = block.querySelector(".rich-text-editor.question-input");
+        if (editor && q.text) {
+          editor.innerHTML = q.text;
+          editor.classList.remove('placeholder');
+        }
+        
+        // Establecer si es obligatorio
+        if (q.required !== undefined) {
+          const checkbox = block.querySelector(".required-checkbox");
+          if (checkbox) {
+            checkbox.checked = q.required;
+          }
+        }
+        
+        // Establecer placeholder si existe y es un tipo de texto
+        if (q.placeholder && ["text", "paragraph"].includes(frontendType)) {
+          const inputElement = block.querySelector(".short-answer-input, .paragraph-input");
+          if (inputElement) {
+            inputElement.placeholder = q.placeholder;
+          }
+        }
+      }
+      
+      container.appendChild(block);
+      
+      // Para tipos con opciones, manejarlos después de que el bloque esté en el DOM
+      if (["radio", "checkbox", "dropdown"].includes(frontendType) && q.options && q.options.length > 0) {
+        // Esperar a que el bloque se renderice completamente
+        setTimeout(() => {
+          const select = block.querySelector('.type-select');
+          if (select) {
+            select.value = frontendType;
+            
+            // Disparar evento change
+            const evt = new Event('change', { bubbles: true });
+            select.dispatchEvent(evt);
+            
+            // Esperar a que se complete el cambio de tipo
+            setTimeout(() => {
+              const questionBody = block.querySelector(".question-body");
+              const optionsDiv = questionBody.querySelector(".options");
+              
+              if (optionsDiv) {
+                // Limpiar opciones existentes
+                optionsDiv.innerHTML = "";
+                
+                // Añadir cada opción
+                q.options.forEach((opt, idx) => {
+                  const optionDiv = document.createElement("div");
+                  optionDiv.className = "option";
+                  
+                  if (frontendType === "dropdown") {
+                    optionDiv.innerHTML = `
+                      <span>${idx + 1}.</span>
+                      <input type="text" class="option-text" value="${opt.label.replace(/"/g, '&quot;')}" placeholder="Valor de opción" />
+                      <span class="delete-btn" title="Eliminar opción">✖</span>
+                    `;
+                  } else {
+                    optionDiv.innerHTML = `
+                      <input type="${frontendType}" name="${q.name}" />
+                      <input type="text" class="option-text" value="${opt.label.replace(/"/g, '&quot;')}" placeholder="Valor de opción" />
+                      <span class="delete-btn" title="Eliminar opción">✖</span>
+                    `;
+                  }
+                  
+                  optionsDiv.appendChild(optionDiv);
+                });
+                
+                // Añadir el enlace "Añadir opción" si no existe
+                if (!questionBody.querySelector('.add-option')) {
+                  const addOptionLink = document.createElement("div");
+                  addOptionLink.className = "add-option";
+                  addOptionLink.textContent = "+ Añadir opción";
+                  questionBody.appendChild(addOptionLink);
+                }
+              }
+              
+              resolve(block);
+            }, 50);
+          } else {
+            resolve(block);
+          }
+        }, 10);
+      } else {
+        // Para otros tipos, solo disparar el evento change
+        setTimeout(() => {
+          const select = block.querySelector('.type-select');
+          if (select) {
+            const evt = new Event('change', { bubbles: true });
+            select.dispatchEvent(evt);
+          }
+          resolve(block);
+        }, 10);
+      }
+    });
+  };
+
+  // Cargar bloques secuencialmente para evitar condiciones de carrera
+  const loadBlocksSequentially = async () => {
+    for (const q of (data.questionsConfig || [])) {
+      await createBlockWithOptions(q);
+    }
+    
+    // Guardar copia global de la configuración original
+    questionsConfig = data.questionsConfig || [];
+    window.questionsConfig = questionsConfig;
+    
+    // Generar la vista previa
+    generatePreviewFromConfig({
+      logoConfig: data.logoConfig || {},
+      titleConfig: data.titleConfig || {},
+      descriptionConfig: data.descriptionConfig || {},
+      thanksConfig: data.thanksConfig || {},
+      questionsConfig: data.questionsConfig || []
+    });
+  };
+
+  loadBlocksSequentially();
+}
+
+    // Cambiar color del tema
+    document.getElementById('themeColor').addEventListener('input', (e) => {
+      document.documentElement.style.setProperty('--main-color', e.target.value);
+    });
+  </script>
+</body>
+</html>
