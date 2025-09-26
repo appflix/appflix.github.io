@@ -950,7 +950,7 @@
           </div>
           <input type="text" class="logo-input" id="logoUrl" 
                  placeholder="Ingresa la URL directa de la imagen para el logo" 
-                 value="https://i.ibb.co/3f1GNGW/Logo-Focus.jpg" />
+                 />
         </div>
       </div>
 
@@ -1076,8 +1076,8 @@
 
   <script>
     // URL para cargar configuración
-    const CONFIG_URL = 'https://script.google.com/macros/s/AKfycbzXIrh1IzXpX0EQ6lJV6m8kUCqZH8HiPn2PN7Rui1A_V_aDXY_6KC7_8Xn2tB8IPX8/exec';
-    const SUBMIT_URL = 'https://script.google.com/macros/s/AKfycbzXIrh1IzXpX0EQ6lJV6m8kUCqZH8HiPn2PN7Rui1A_V_aDXY_6KC7_8Xn2tB8IPX8/exec';
+    const CONFIG_URL = 'https://script.google.com/macros/s/AKfycbxypnEpNZKYoOVnFNj_zpoXOX23E-2ufoPNesF-T7ib0RSrKIo_YgQF40EFcGMJqtot2g/exec';
+    const SUBMIT_URL = CONFIG_URL;
     
     // Configuración por defecto (en caso de error)
     const DEFAULT_CONFIG_STRING = `{
@@ -1356,21 +1356,27 @@ function generatePreview() {
     }
 
     // ====== Función para cargar logo en vista previa ======
-    function loadPreviewLogo(url, alt) {
-      const logoContainer = document.getElementById('previewLogoContainer');
-      logoContainer.innerHTML = ''; // Limpiar contenedor
-      
-      const img = document.createElement('img');
-      img.src = url;
-      img.alt = alt;
-      img.onerror = function() {
-        console.error("Error cargando logo:", this.src);
-        // Intentar cargar un logo de respaldo si el principal falla
-        img.src = 'https://via.placeholder.com/600x120/003cff/ffffff?text=Logo+Placeholder';
-      };
-      
-      logoContainer.appendChild(img);
-    }
+function loadPreviewLogo(url, alt) {
+  const logoContainer = document.getElementById('previewLogoContainer');
+  logoContainer.innerHTML = ''; // Limpiar contenedor
+
+  // ✅ Si no hay URL, no mostrar nada (ni placeholder)
+  if (!url || url.trim() === "") {
+    return;
+  }
+
+  const img = document.createElement('img');
+  img.src = url;
+  img.alt = alt || "Logo";
+
+  // Fallback si el link está roto
+  img.onerror = function() {
+    console.error("Error cargando logo:", this.src);
+    logoContainer.innerHTML = '<span style="color:#999;font-size:12px;">Logo no disponible</span>';
+  };
+
+  logoContainer.appendChild(img);
+}
 
     // ====== Función para crear encabezado en vista previa ======
     function createPreviewHeader(containerId, titleConfig, descriptionConfig, thanksConfig) {
@@ -2155,7 +2161,7 @@ async function previewSend() {
     // ====== Función para cargar configuración ======
     async function loadConfig() {
       try {
-        const response = await fetch(CONFIG_URL);
+        const response = await fetch(SUBMIT_URL);
         if (!response.ok) throw new Error(`Error HTTP! estado: ${response.status}`);
         
         const result = await response.json();
@@ -2752,7 +2758,7 @@ document.getElementById("sendToGoogle").addEventListener("click", async () => {
     toast.classList.add("show");
    
 
-    const response = await fetch("https://script.google.com/macros/s/AKfycbzXIrh1IzXpX0EQ6lJV6m8kUCqZH8HiPn2PN7Rui1A_V_aDXY_6KC7_8Xn2tB8IPX8/exec", {
+    const response = await fetch(SUBMIT_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify(data)
