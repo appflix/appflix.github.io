@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Dynamic Form - Editor and Preview</title>
+  <title>Informed Consent</title>
   <style>
     /* Existing editor styles (remain the same) */
     :root {
@@ -17,7 +17,7 @@
 
     body {
       font-family: 'Roboto', 'Segoe UI', Arial, sans-serif;
-      background:  #202124;
+      background:  #1a1a1a;
       margin: 0;
       padding: 20px;
       color: var(--text-color);
@@ -27,7 +27,7 @@
   max-width: 600px;         /* same as form */
   margin: 0 auto 10px;      /* centered */
   display: flex;
-  justify-content: flex-end; /* pushes button to the right */
+  justify-content: flex-end; /* push button to the right */
 }
 
 .view-toggle button {
@@ -450,7 +450,7 @@
     }
 
     .name-display {
-      display: none; /* We hide the name display */
+      display: none; /* Hide name display */
     }
 
     .placeholder-input {
@@ -585,7 +585,7 @@
             margin-bottom: 20px;
             text-align: center;
             box-sizing: border-box;
-            margin: 0 auto 20px; /* centers horizontally and adds bottom margin */
+            margin: 0 auto 20px; /* center horizontally and add bottom margin */
             
     }
 
@@ -606,7 +606,7 @@
             box-sizing: border-box;
             padding: 22px;
             margin-bottom: 20px;
-            margin: 0 auto 20px; /* centers horizontally and adds bottom margin */
+            margin: 0 auto 20px; /* center horizontally and add bottom margin */
     }
 
     .preview-form-container2 {
@@ -619,7 +619,7 @@
             padding: 32px;
             margin-bottom: 20px;
             position: relative;
-            margin: 0 auto 20px; /* centers horizontally and adds bottom margin */
+            margin: 0 auto 20px; /* center horizontally and add bottom margin */
     }
 
     .preview-form-container3 {
@@ -628,7 +628,7 @@
             box-sizing: border-box;
             padding: 0px;
             margin-bottom: 20px;
-            margin: 0 auto 20px; /* centers horizontally and adds bottom margin */
+            margin: 0 auto 20px; /* center horizontally and add bottom margin */
     }
 
     .preview-question-container {
@@ -942,15 +942,15 @@
       <label>Color: <input type="color" id="themeColor" value="#003cff" /></label>
     </div>
     <div class="form-container" id="formContainer">
-      <!-- Section to configure the logo -->
+      <!-- Logo configuration section -->
       <div class="logo-config">
         <div class="logo-input-container">
           <div class="logo-preview" id="logoPreview">
             <span style="color: #999; font-size: 12px;">Logo preview</span>
           </div>
           <input type="text" class="logo-input" id="logoUrl" 
-                 placeholder="Enter direct image URL for logo" 
-                 value="https://i.ibb.co/3f1GNGW/Logo-Focus.jpg" />
+                 placeholder="Enter direct image URL for the logo" 
+                 />
         </div>
       </div>
 
@@ -970,7 +970,7 @@
             <div class="format-toolbar">
               <button class="format-btn" data-command="bold" title="Bold">B</button>
             </div>
-            <div class="rich-text-editor question-input" contenteditable="true" data-placeholder="Enter the question here"></div>
+            <div class="rich-text-editor question-input" contenteditable="true" data-placeholder="Enter question here"></div>
             <select class="type-select">
               <option value="text" selected>Short answer</option>
               <option value="radio">Multiple choice</option>
@@ -986,7 +986,7 @@
           <div class="question-body">
             <input type="text" class="short-answer-input" placeholder="Enter your answer here">
             <div class="name-display">Field name: text_1</div>
-            <div class="tutorial-note">Click on any text to edit it directly</div>
+            <div class="tutorial-note">Click any text to edit it directly</div>
           </div>
           
           <div class="question-footer">
@@ -1003,13 +1003,13 @@
         </div>
       </div>
 
-      <!-- Section for closing/thank you message -->
+      <!-- Closing/thank you message section -->
       <div class="closing-message">
         <div class="closing-title">Closing/Thank You Message</div>
         <div class="format-toolbar">
           <button class="format-btn" data-command="bold" title="Bold">B</button>
         </div>
-        <div class="rich-text-editor" id="closingMessage" contenteditable="true" data-placeholder="Enter the message to display after form submission">Thank You! Your response has been successfully recorded.</div>
+        <div class="rich-text-editor" id="closingMessage" contenteditable="true" data-placeholder="Enter message to show after form submission">Thank you! Your response has been successfully recorded.</div>
       </div>
 
       <div class="footer">
@@ -1035,7 +1035,7 @@
     <!-- Container for dynamic logo -->
     <div id="previewLogoContainer" class="preview-logo-container"></div>
 
-    <!-- Container for header with title, description and thanks -->
+    <!-- Container for header with title, description and acknowledgments -->
     <div id="previewHeaderContainer" class="preview-form-container"></div>
 
     <!-- Error message -->
@@ -1062,11 +1062,11 @@
   <!-- Password Modal -->
 <div id="passwordModal" class="password-modal">
   <div class="password-modal-content">
-    <h2>This part is just for the form owner. If that’s not you, feel free to just ignore it!</h2>
+    <h2>This section is only for the form owner. If that's not you, you can ignore it!</h2>
     <h3>Enter password</h3>
     <input type="password" id="passwordInput" placeholder="Password" />
     <div class="modal-buttons">
-      <button id="passwordSubmit">Accept</button>
+      <button id="passwordSubmit">OK</button>
       <button id="passwordCancel">Cancel</button>
     </div>
     <div id="passwordError" class="password-error">Incorrect password</div>
@@ -1076,8 +1076,8 @@
 
   <script>
     // URL to load configuration
-    const CONFIG_URL = 'https://script.google.com/macros/s/AKfycbwvU0m1h1vqSGhUL0_hHBt_gYyJFH-HEbYJSt6vm17M8vmANlCyObfmHJ5f4nxCK3RJ/exec';
-    const SUBMIT_URL = 'https://script.google.com/macros/s/AKfycbwvU0m1h1vqSGhUL0_hHBt_gYyJFH-HEbYJSt6vm17M8vmANlCyObfmHJ5f4nxCK3RJ/exec';
+    const CONFIG_URL = 'https://script.google.com/macros/s/AKfycbyvzghLrk4lEdzgTAIYDaD7Xh6yk-mtxRTYCh8FzNpXrbTb9wE9OqLFyj61u1XftqU1GQ/exec';
+    const SUBMIT_URL = CONFIG_URL;
     
     // Default configuration (in case of error)
     const DEFAULT_CONFIG_STRING = `{
@@ -1098,7 +1098,7 @@
       },
       "thanksConfig": {
         "id": "header-thanks",
-        "thanksHTML": "Thank You! Your response has been successfully recorded."
+        "thanksHTML": "Thank you! Your response has been successfully recorded."
       },
       "questionsConfig": [
         {
@@ -1127,9 +1127,9 @@
 
 
 function disableEditorInputs() {
-  // All inputs and textareas in the editor
- /* document.querySelectorAll('#editorView input, #editorView textarea, #editorView select').forEach(el => {
-    // Except those used to edit title/description/etc.
+  // All inputs and text areas in the editor
+  /* document.querySelectorAll('#editorView input, #editorView textarea, #editorView select').forEach(el => {
+    // Except those used for editing title/description/etc.
     if (!el.classList.contains('form-title') && !el.classList.contains('form-description')&& el.id !== 'themeColor') {
       el.setAttribute('disabled', 'true');
       el.setAttribute('readonly', 'true');
@@ -1176,31 +1176,31 @@ document.addEventListener('DOMContentLoaded', async function() {
     const configData = await loadConfig();
     
     if (configData) {
-      loadForm(configData); // ✅ generatePreview() ahora se llama dentro de loadForm()
+      loadForm(configData); // ✅ generatePreview() is now called inside loadForm()
       showToast('Configuration loaded successfully');
     }
   } catch (error) {
     console.error('Error loading configuration:', error);
     showToast('Error loading configuration. Using default configuration.', true);
     
-    // Intentar con configuración por defecto
+    // Try with default configuration
     try {
       const defaultConfig = JSON.parse(DEFAULT_CONFIG_STRING);
       loadForm(defaultConfig);
     } catch (parseError) {
-      console.error("Error with default config:", parseError);
+      console.error("Error with default configuration:", parseError);
     }
   } finally {
     loadingOverlay.style.display = 'none';
     initLogo();
-    initRichTextEditors();
+    initRichTextFormatting(); // ✅ Cambiado a la nueva función
     initImprovedDragSystem();
     setupViewToggle();
-    // ❌ NO llamar generatePreview() aquí - ya se llama dentro de loadForm()
+    // ❌ DO NOT call generatePreview() here - it's already called inside loadForm()
   }
 });
 
-    // ====== Configure view toggle buttons ======
+    // ====== Set up view toggle buttons ======
     function setupViewToggle() {
       const editViewBtn = document.getElementById('editViewBtn');
       const previewViewBtn = document.getElementById('previewViewBtn');
@@ -1215,13 +1215,13 @@ document.addEventListener('DOMContentLoaded', async function() {
       });
 
 
-        // Cancel button
+        // Cancel Button
   document.getElementById('passwordCancel').addEventListener('click', () => {
     document.getElementById('passwordModal').style.display = 'none';
   });
 
 
-    // Accept button
+    // OK Button
   document.getElementById('passwordSubmit').addEventListener('click', () => {
     const input = document.getElementById('passwordInput').value.trim();
 if (input === 'saving2025') {
@@ -1240,7 +1240,7 @@ else {
     }
   });
 
-// Allow Enter in the input
+// Allow Enter in input
 document.getElementById('passwordInput').addEventListener('keyup', (e) => {
   if (e.key === 'Enter') {
     document.getElementById('passwordSubmit').click();
@@ -1261,7 +1261,7 @@ document.getElementById('passwordInput').addEventListener('keyup', (e) => {
     }
 
 
-    // Genera la preview usando directamente la configuración (evita race con el DOM del editor)
+    // Generate preview using configuration directly (avoids race with editor DOM)
 function generatePreviewFromConfig(formData) {
   if (!formData) return;
   try {
@@ -1282,10 +1282,10 @@ function generatePreviewFromConfig(formData) {
       createPreviewQuestion("previewFormRoot", questionConfig);
     });
 
-    console.info("Preview generada desde config (server).");
+    console.info("Preview generated from configuration (server).");
   } catch (err) {
-    console.error("Error en generatePreviewFromConfig:", err);
-    // Como fallback, intenta la generación normal
+    console.error("Error in generatePreviewFromConfig:", err);
+    // As fallback, try normal generation
     generatePreview();
   }
 }
@@ -1313,12 +1313,12 @@ function generatePreview() {
     createPreviewQuestion("previewFormRoot", questionConfig);
   });
 
-  // 🔄 Re-render de seguridad para evitar que falten opciones
+  // 🔄 Safety re-render to prevent missing options
   setTimeout(() => {
     const stillEmpty = [...document.querySelectorAll(".preview-radio-group, .preview-checkbox-group, .preview-select")]
-      .some(el => el.children.length <= 1); // solo "Select an option" o vacío
+      .some(el => el.children.length <= 1); // only "Select an option" or empty
     if (stillEmpty) {
-      console.warn("⚠️ Algunas opciones no se cargaron, regenerando preview...");
+      console.warn("⚠️ Some options didn't load, regenerating preview...");
       previewFormRoot.innerHTML = '';
       formData.questionsConfig.forEach(questionConfig => {
         createPreviewQuestion("previewFormRoot", questionConfig);
@@ -1356,21 +1356,27 @@ function generatePreview() {
     }
 
     // ====== Function to load logo in preview ======
-    function loadPreviewLogo(url, alt) {
-      const logoContainer = document.getElementById('previewLogoContainer');
-      logoContainer.innerHTML = ''; // Clear container
-      
-      const img = document.createElement('img');
-      img.src = url;
-      img.alt = alt;
-      img.onerror = function() {
-        console.error("Error loading logo:", this.src);
-        // Try to load a fallback logo if main one fails
-        img.src = 'https://via.placeholder.com/600x120/003cff/ffffff?text=Logo+Placeholder';
-      };
-      
-      logoContainer.appendChild(img);
-    }
+function loadPreviewLogo(url, alt) {
+  const logoContainer = document.getElementById('previewLogoContainer');
+  logoContainer.innerHTML = ''; // Clear container
+
+  // ✅ If no URL, don't show anything (not even placeholder)
+  if (!url || url.trim() === "") {
+    return;
+  }
+
+  const img = document.createElement('img');
+  img.src = url;
+  img.alt = alt || "Logo";
+
+  // Fallback if link is broken
+  img.onerror = function() {
+    console.error("Error loading logo:", this.src);
+    logoContainer.innerHTML = '<span style="color:#999;font-size:12px;">Logo not available</span>';
+  };
+
+  logoContainer.appendChild(img);
+}
 
     // ====== Function to create header in preview ======
     function createPreviewHeader(containerId, titleConfig, descriptionConfig, thanksConfig) {
@@ -1432,16 +1438,16 @@ function generatePreview() {
 function createPreviewQuestion(containerId, config) {
   const container = document.getElementById(containerId);
 
-  // ✅ Patch: asegurar que las opciones existan
+  // ✅ Patch: ensure options exist
   if (config.type === "radio" || config.type === "checkbox" || config.type === "dropdown") {
     if (!config.options || !Array.isArray(config.options) || config.options.length === 0) {
-      console.warn(`⚠️ ${config.name} llegó sin opciones, intentando recuperar...`);
-      // Buscar en la config global original
+      console.warn(`⚠️ ${config.name} arrived without options, trying to recover...`);
+      // Search in original global configuration
       if (window.questionsConfig && Array.isArray(window.questionsConfig)) {
         const original = window.questionsConfig.find(q => q.name === config.name);
         if (original && original.options && original.options.length > 0) {
           config.options = original.options;
-          console.info(`✅ Opciones restauradas para ${config.name}`, config.options);
+          console.info(`✅ Options restored for ${config.name}`, config.options);
         }
       }
     }
@@ -1570,7 +1576,7 @@ function createPreviewQuestion(containerId, config) {
 
     const clearButton = document.createElement("button");
     clearButton.type = "button";
-    clearButton.textContent = "Erase";
+    clearButton.textContent = "Clear";
     clearButton.className = "preview-button";
     clearButton.style.marginTop = "8px";
 
@@ -1640,7 +1646,7 @@ function createPreviewQuestion(containerId, config) {
     const warning = document.createElement("div");
     warning.className = "preview-warning";
     warning.id = `preview_warning_${config.name}`;
-    warning.textContent = "This is a required field";
+    warning.textContent = "This field is required";
     warning.style.display = "none";
     questionContainer.appendChild(warning);
   }
@@ -1660,22 +1666,22 @@ function createPreviewQuestion(containerId, config) {
       
       // Adjust canvas size
       function resizeCanvas() {
-  // Guardar el contenido actual
+  // Save current content
   const temp = document.createElement("canvas");
   temp.width = canvas.width;
   temp.height = canvas.height;
   temp.getContext("2d").drawImage(canvas, 0, 0);
 
-  // Cambiar tamaño
+  // Change size
   const width = canvas.offsetWidth;
   const height = width * 0.6;
   canvas.width = width;
   canvas.height = height;
 
-  // Restaurar contenido escalado
+  // Restore scaled content
   ctx.drawImage(temp, 0, 0, temp.width, temp.height, 0, 0, canvas.width, canvas.height);
 
-  // Estilos
+  // Styles
   ctx.lineWidth = 3;
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
@@ -1741,7 +1747,7 @@ function createPreviewQuestion(containerId, config) {
         drawing = false;
       }, { passive: false });
       
-      // Button to erase
+      // Clear button
       clearButton.addEventListener('click', () => {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
       });
@@ -1776,7 +1782,7 @@ async function previewSend() {
     const warning = container.querySelector(".preview-warning");
     const isRequired = container.dataset.required === "true";
 
-    // If it's a textblock, don't process as input field
+    // If it's a text block, don't process as input field
     if (container.querySelector(".preview-textblock")) {
       return;
     }
@@ -1813,7 +1819,7 @@ async function previewSend() {
         if (checked.value === "other") {
           const otherInput = container.querySelector(`#preview_${name}_other`);
           if (!otherInput || !otherInput.value.trim()) {
-            isEmpty = true; // 🔴 obligatorio si se selecciona Other
+            isEmpty = true; // 🔴 required if Other is selected
           } else {
             value = otherInput.value.trim();
           }
@@ -1834,7 +1840,7 @@ async function previewSend() {
           if (el.value === "other") {
             const otherInput = container.querySelector(`#preview_${name}_other`);
             if (!otherInput || !otherInput.value.trim()) {
-              isEmpty = true; // 🔴 obligatorio si se selecciona Other
+              isEmpty = true; // 🔴 required if Other is selected
               return null;
             }
             return otherInput.value.trim();
@@ -1848,21 +1854,21 @@ async function previewSend() {
       }
 
     } else if (input.tagName === "SELECT") {
-      // ✅ DROPDOWNS
+      // ✅ DROPDOWN LISTS
       isEmpty = input.value === "";
       value = input.value;
 
       if (input.value === "other") {
         const otherInput = container.querySelector(`#preview_${name}_other`);
         if (!otherInput || !otherInput.value.trim()) {
-          isEmpty = true; // 🔴 obligatorio si se selecciona Other
+          isEmpty = true; // 🔴 required if Other is selected
         } else {
           value = otherInput.value.trim();
         }
       }
 
     } else {
-      // Text, textarea, date or time
+      // Text, text area, date or time
       value = input.value.trim();
       isEmpty = !value;
     }
@@ -1891,7 +1897,7 @@ async function previewSend() {
   showLoading();
 
   try {
-    console.log("Payload a enviar:", JSON.stringify(payload, null, 2));
+    console.log("Payload to send:", JSON.stringify(payload, null, 2));
     
     const response = await fetch(SUBMIT_URL, {
       method: 'POST',
@@ -1902,7 +1908,7 @@ async function previewSend() {
     });
 
     const result = await response.json();
-    console.log("Respuesta del servidor:", result);
+    console.log("Server response:", result);
 
     if (result.success) {
       document.getElementById("previewFormRoot").style.display = "none";
@@ -1921,19 +1927,117 @@ async function previewSend() {
   }
 }
 
+    // ====== NUEVO SISTEMA DE FORMATO DE TEXTO ======
+    
+    // Inicializar el sistema de formato
+    function initRichTextFormatting() {
+      console.log("Inicializando sistema de formato...");
+      
+      // Configurar todos los editores de texto enriquecido
+      setupAllRichTextEditors();
+      
+      // Configurar botones de formato
+      setupFormatButtons();
+      
+      console.log("Sistema de formato inicializado correctamente");
+    }
 
+    // Configurar todos los editores de texto enriquecido
+    function setupAllRichTextEditors() {
+      const editors = document.querySelectorAll('.rich-text-editor[contenteditable="true"]');
+      
+      editors.forEach((editor, index) => {
+        const placeholder = editor.getAttribute('data-placeholder');
+        
+        // Configurar placeholder
+        if (!editor.textContent.trim() && placeholder) {
+          editor.innerHTML = '';
+          editor.classList.add('placeholder');
+        }
+        
+        // Eventos de focus/blur para placeholder
+        editor.addEventListener('focus', function() {
+          if (this.classList.contains('placeholder')) {
+            this.innerHTML = '';
+            this.classList.remove('placeholder');
+          }
+        });
+        
+        editor.addEventListener('blur', function() {
+          if (!this.textContent.trim() && placeholder) {
+            this.innerHTML = '';
+            this.classList.add('placeholder');
+          }
+        });
+        
+        // Mantener seguimiento de la selección actual
+        editor.addEventListener('click', function() {
+          window.currentFocusedEditor = this;
+        });
+        
+        editor.addEventListener('keyup', function() {
+          window.currentFocusedEditor = this;
+        });
+        
+        console.log(`Editor ${index} configurado:`, editor);
+      });
+    }
 
-    document.addEventListener('click', (e) => {
-  if (!e.target.classList.contains('format-btn')) return;
-  const command = e.target.dataset.command;
-  const editor = e.target.closest('.question-header, .form-header, .closing-message')
-                        .querySelector('[contenteditable]');
-  if (editor) {
-    document.execCommand(command, false, null);
-    editor.focus();
-  }
-});
+    // Configurar botones de formato
+    function setupFormatButtons() {
+      const formatButtons = document.querySelectorAll('.format-btn');
+      
+      formatButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          const command = this.dataset.command;
+          console.log(`Botón de formato clickeado: ${command}`);
+          
+          // Encontrar el editor activo
+          let activeEditor = window.currentFocusedEditor;
+          
+          if (!activeEditor) {
+            // Si no hay editor enfocado, buscar el más cercano
+            activeEditor = this.closest('.question-header, .form-header, .closing-message')
+                              ?.querySelector('.rich-text-editor[contenteditable="true"]');
+          }
+          
+          if (activeEditor) {
+            console.log(`Aplicando formato a editor:`, activeEditor);
+            applyFormatToEditor(activeEditor, command);
+          } else {
+            console.warn('No se encontró editor activo para aplicar formato');
+          }
+        });
+      });
+    }
 
+    // Aplicar formato al editor
+    function applyFormatToEditor(editor, command) {
+      // Asegurarse de que el editor tenga foco
+      editor.focus();
+      
+      // Guardar la selección actual
+      const selection = window.getSelection();
+      
+      if (selection.toString().length > 0) {
+        // Hay texto seleccionado - aplicar formato
+        try {
+          document.execCommand(command, false, null);
+          console.log(`Formato ${command} aplicado a texto seleccionado`);
+        } catch (error) {
+          console.error(`Error aplicando formato ${command}:`, error);
+        }
+      } else {
+        // No hay texto seleccionado - activar modo para el texto que se escribirá
+        console.log(`Modo ${command} activado para texto futuro`);
+      }
+      
+      // Mantener el foco en el editor
+      editor.focus();
+    }
 
     // ====== Function to show errors in preview ======
     function showPreviewError(message) {
@@ -1941,7 +2045,7 @@ async function previewSend() {
       errorDiv.textContent = message;
       errorDiv.style.display = 'block';
       
-      // Scroll to top to show error
+      // Scroll up to show error
       window.scrollTo({ top: 0, behavior: 'smooth' });
       
       // Hide error after 5 seconds
@@ -1962,7 +2066,7 @@ async function previewSend() {
         document.querySelectorAll('.question-block, .text-block, .image-block, .section-block').forEach(block => {
           const dragHandle = block.querySelector('.drag-handle') || createDragHandle(block);
           
-          // Configure events for drag handle
+          // Set up events for drag handle
           dragHandle.addEventListener('mousedown', startDrag);
           dragHandle.addEventListener('touchstart', startDrag, { passive: false });
           
@@ -2109,53 +2213,16 @@ async function previewSend() {
       observer.observe(questionsDiv, { childList: true, subtree: true });
     }
 
-    // ====== Initialize rich text editors ======
+    // ====== Initialize rich text editors (mantener para compatibilidad) ======
     function initRichTextEditors() {
-      // Configure placeholders for content editable editors
-      document.querySelectorAll('[contenteditable][data-placeholder]').forEach(editor => {
-        const placeholder = editor.getAttribute('data-placeholder');
-        
-        // Set initial placeholder if empty
-        if (!editor.textContent.trim()) {
-          editor.innerHTML = '';
-          editor.classList.add('placeholder');
-        }
-        
-        // Handle focus
-        editor.addEventListener('focus', function() {
-          if (this.classList.contains('placeholder')) {
-            this.innerHTML = '';
-            this.classList.remove('placeholder');
-          }
-        });
-        
-        editor.addEventListener('blur', function() {
-          if (!this.textContent.trim()) {
-            this.innerHTML = '';
-            this.classList.add('placeholder');
-          }
-        });
-      });
-      
-      // Configure format buttons
-      document.querySelectorAll('.format-btn').forEach(button => {
-        button.addEventListener('click', function() {
-          const command = this.dataset.command;
-          const editor = this.closest('.question-header, .form-header, .closing-message')
-            .querySelector('[contenteditable]');
-          
-          if (editor) {
-            document.execCommand(command, false, null);
-            editor.focus();
-          }
-        });
-      });
+      // Esta función ahora está obsoleta - usamos initRichTextFormatting en su lugar
+      initRichTextFormatting();
     }
 
     // ====== Function to load configuration ======
     async function loadConfig() {
       try {
-        const response = await fetch(CONFIG_URL);
+        const response = await fetch(SUBMIT_URL);
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         
         const result = await response.json();
@@ -2169,13 +2236,13 @@ async function previewSend() {
         return configData;
         
       } catch (error) {
-        console.error("Error loading config from URL:", error);
+        console.error("Error loading configuration from URL:", error);
         console.log("Using default configuration...");
         
         try {
           return JSON.parse(DEFAULT_CONFIG_STRING);
         } catch (parseError) {
-          console.error("Error parsing default config:", parseError);
+          console.error("Error parsing default configuration:", parseError);
           showError("Error loading form configuration. Please try again later.");
           return null;
         }
@@ -2204,7 +2271,7 @@ async function previewSend() {
       updateLogoPreview();
     }
 
-    // ====== Show toast/notification ======
+    // ====== Show notification ======
     function showToast(message, isError = false) {
       const toast = document.getElementById('toast');
       toast.textContent = message;
@@ -2232,7 +2299,7 @@ async function previewSend() {
           <div class="format-toolbar">
             <button class="format-btn" data-command="bold" title="Bold">B</button>
           </div>
-          <div class="rich-text-editor question-input" contenteditable="true" data-placeholder="Enter the question here"></div>
+          <div class="rich-text-editor question-input" contenteditable="true" data-placeholder="Enter question here"></div>
           <select class="type-select">
             <option value="radio">Multiple choice</option>
             <option value="checkbox">Checkboxes</option>
@@ -2273,7 +2340,7 @@ async function previewSend() {
         select.dispatchEvent(event);
         
         // Initialize rich text editor
-        initRichTextEditors();
+        initRichTextFormatting(); // ✅ Cambiado a la nueva función
       }, 0);
       
       return block;
@@ -2302,7 +2369,7 @@ async function previewSend() {
       
       // Initialize rich text editor
       setTimeout(() => {
-        initRichTextEditors();
+        initRichTextFormatting(); // ✅ Cambiado a la nueva función
       }, 0);
       
       return block;
@@ -2349,7 +2416,7 @@ async function previewSend() {
       
       // Initialize rich text editor
       setTimeout(() => {
-        initRichTextEditors();
+        initRichTextFormatting(); // ✅ Cambiado a la nueva función
       }, 0);
       
       return block;
@@ -2391,7 +2458,7 @@ async function previewSend() {
       block.dataset.type = type;
       block.dataset.name = newName;
       
-      // Update name display (even if hidden)
+      // Update name display (even though hidden)
       const nameDisplay = block.querySelector(".name-display");
       if (nameDisplay) {
         nameDisplay.textContent = `Field name: ${newName}`;
@@ -2403,7 +2470,7 @@ async function previewSend() {
       const currentInput = block.querySelector(".short-answer-input, .paragraph-input");
       const currentPlaceholder = currentInput ? currentInput.placeholder : "";
       
-      // Clean question body but keep input and name display
+      // Clear question body but keep input and name display
       const inputElement = block.querySelector(".short-answer-input, .paragraph-input");
       const nameDisplayElement = block.querySelector(".name-display");
       
@@ -2466,7 +2533,7 @@ async function previewSend() {
         questionBody.innerHTML += `
           <div style="margin:10px 0;">
             <canvas class="signature-canvas" width="400" height="150" style="border:1px solid #ccc; border-radius:4px; background:#fff; cursor:crosshair;"></canvas><br />
-            <button type="button" class="erase-signature" style="margin-top:6px; padding:4px 10px; border:1px solid #ccc; border-radius:4px; cursor:pointer;">Erase</button>
+            <button type="button" class="erase-signature" style="margin-top:6px; padding:4px 10px; border:1px solid #ccc; border-radius:4px; cursor:pointer;">Clear</button>
           </div>
         `;
         showAdd(false);
@@ -2540,12 +2607,12 @@ async function previewSend() {
             <div class="option">
               <span>1.</span>
               <input type="text" class="option-text" value="Option 1" placeholder="Option value" />
-              <span class="delete-btn" title="Remove option">✖</span>
+              <span class="delete-btn" title="Delete option">✖</span>
             </div>
             <div class="option">
               <span>2.</span>
               <input type="text" class="option-text" value="Option 2" placeholder="Option value" />
-              <span class="delete-btn" title="Remove option">✖</span>
+              <span class="delete-btn" title="Delete option">✖</span>
             </div>
           </div>
           <div class="add-option">+ Add option</div>
@@ -2558,12 +2625,12 @@ async function previewSend() {
             <div class="option">
               <input type="${type}" name="${newName}" />
               <input type="text" class="option-text" value="Option 1" placeholder="Option value" />
-              <span class="delete-btn" title="Remove option">✖</span>
+              <span class="delete-btn" title="Delete option">✖</span>
             </div>
             <div class="option">
               <input type="${type}" name="${newName}" />
               <input type="text" class="option-text" value="Option 2" placeholder="Option value" />
-              <span class="delete-btn" title="Remove option">✖</span>
+              <span class="delete-btn" title="Delete option">✖</span>
             </div>
           </div>
           <div class="add-option">+ Add option</div>
@@ -2578,8 +2645,8 @@ async function previewSend() {
     });
 
 
-// Evento delegado para "Add other" en el editor
-// Evento delegado para "Add other" en el editor (REEMPLAZADO)
+// Delegate event for "Add other" in editor
+// Delegate event for "Add other" in editor (REPLACED)
 document.getElementById("questions").addEventListener("click", (e) => {
   if (!e.target.classList.contains("add-other")) return;
   e.preventDefault();
@@ -2592,25 +2659,25 @@ document.getElementById("questions").addEventListener("click", (e) => {
   const type = block.dataset.type || block.querySelector('.type-select')?.value;
 
   if (type === "dropdown") {
-    // Dropdown: NO mostrar radio, mostrar número + texto + botón eliminar
+    // Dropdown: DO NOT show radio, show number + text + delete button
     const optionCount = optionsContainer.querySelectorAll(".option").length + 1;
     const optionDiv = document.createElement("div");
     optionDiv.className = "option";
     optionDiv.innerHTML = `
       <span>${optionCount}.</span>
       <input type="text" class="option-text" value="Other" />
-      <span class="delete-btn" title="Remove option">✖</span>
+      <span class="delete-btn" title="Delete option">✖</span>
     `;
     optionsContainer.appendChild(optionDiv);
   } else {
-    // Radio/Checkbox: mostrar input decorativo + texto editable + eliminar
+    // Radio/Checkbox: show decorative input + editable text + delete
     const qName = block.dataset.name || `${type}_${fieldCounters[type] ? fieldCounters[type]++ : 1}`;
     const optionDiv = document.createElement("div");
     optionDiv.className = "option";
     optionDiv.innerHTML = `
       <input type="${type === 'checkbox' ? 'checkbox' : 'radio'}" name="${qName}" disabled />
       <input type="text" class="option-text" value="Other" />
-      <span class="delete-btn" title="Remove option">✖</span>
+      <span class="delete-btn" title="Delete option">✖</span>
     `;
     optionsContainer.appendChild(optionDiv);
   }
@@ -2639,7 +2706,7 @@ document.getElementById("questions").addEventListener("click", (e) => {
           newOption.innerHTML = `
             <span>${optionCount}.</span>
             <input type="text" class="option-text" value="New option" placeholder="Option value" />
-            <span class="delete-btn" title="Remove option">✖</span>
+            <span class="delete-btn" title="Delete option">✖</span>
           `;
           optionsDiv.appendChild(newOption);
         } else {
@@ -2649,7 +2716,7 @@ document.getElementById("questions").addEventListener("click", (e) => {
           newOption.innerHTML = `
             <input type="${type}" name="${qName}" />
             <input type="text" class="option-text" value="New option" placeholder="Option value" />
-            <span class="delete-btn" title="Remove option">✖</span>
+            <span class="delete-btn" title="Delete option">✖</span>
           `;
           optionsDiv.appendChild(newOption);
         }
@@ -2693,7 +2760,7 @@ document.getElementById("questions").addEventListener("click", (e) => {
         clonedInput.placeholder = originalInput.placeholder;
       }
       
-      // Copy required state
+      // Copy required status
       clonedQuestion.querySelector(".required-checkbox").checked = question.querySelector(".required-checkbox").checked;
       
       // Insert after current question
@@ -2727,7 +2794,7 @@ document.getElementById("questions").addEventListener("click", (e) => {
             img.style.marginTop = '16px';
             img.style.borderRadius = '4px';
             
-            // Insert image into question body
+            // Insert image in question body
             questionBody.appendChild(img);
           }
           
@@ -2752,7 +2819,7 @@ document.getElementById("sendToGoogle").addEventListener("click", async () => {
     toast.classList.add("show");
    
 
-    const response = await fetch("https://script.google.com/macros/s/AKfycbwvU0m1h1vqSGhUL0_hHBt_gYyJFH-HEbYJSt6vm17M8vmANlCyObfmHJ5f4nxCK3RJ/exec", {
+    const response = await fetch(SUBMIT_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify(data)
@@ -2816,18 +2883,18 @@ function serializeForm() {
     } else if (type === "radio" || type === "checkbox" || type === "dropdown") {
       const options = [];
 
-      // tomar todas las opciones escritas en el editor
+      // take all options written in editor
       block.querySelectorAll(".option-text").forEach(input => {
         const text = (input.value || input.textContent || "").trim();
         if (text) {
           options.push({
-            value: text.toLowerCase().replace(/\s+/g, "_"),
+            value: text,
             label: text
           });
         }
       });
 
-      // si existe la opción especial "Other"
+      // if special "Other" option exists
       if (block.querySelector(".option-other")) {
         options.push({ value: "other", label: "Other" });
       }
@@ -2911,7 +2978,7 @@ function loadForm(data) {
     fieldCounters[key] = 1;
   }
 
-  // Función auxiliar para crear bloques de manera síncrona
+  // Helper function to create blocks synchronously
   const createBlockWithOptions = (q) => {
     return new Promise((resolve) => {
       let frontendType = q.type;
@@ -2920,7 +2987,7 @@ function loadForm(data) {
       let block;
       
       if (q.type === "textblock") {
-        // Código para textblock (mantener igual)
+        // Code for text block (keep same)
         block = createTextBlock();
         const editor = block.querySelector(".rich-text-editor");
         if (editor && q.text) {
@@ -2946,7 +3013,7 @@ function loadForm(data) {
           }
         }
         
-        // Set placeholder if exists and is a text type
+        // Set placeholder if exists and is text type
         if (q.placeholder && ["text", "paragraph"].includes(frontendType)) {
           const inputElement = block.querySelector(".short-answer-input, .paragraph-input");
           if (inputElement) {
@@ -2957,19 +3024,19 @@ function loadForm(data) {
       
       container.appendChild(block);
       
-      // Para tipos con opciones, manejarlos después de que el bloque esté en el DOM
+      // For types with options, handle them after block is in DOM
       if (["radio", "checkbox", "dropdown"].includes(frontendType) && q.options && q.options.length > 0) {
-        // Esperar a que el bloque se renderice completamente
+        // Wait for block to render completely
         setTimeout(() => {
           const select = block.querySelector('.type-select');
           if (select) {
             select.value = frontendType;
             
-            // Disparar evento change
+            // Trigger change event
             const evt = new Event('change', { bubbles: true });
             select.dispatchEvent(evt);
             
-            // Esperar a que se complete el cambio de tipo
+            // Wait for type change to complete
             setTimeout(() => {
               const questionBody = block.querySelector(".question-body");
               const optionsDiv = questionBody.querySelector(".options");
@@ -2987,20 +3054,20 @@ function loadForm(data) {
                     optionDiv.innerHTML = `
                       <span>${idx + 1}.</span>
                       <input type="text" class="option-text" value="${opt.label.replace(/"/g, '&quot;')}" placeholder="Option value" />
-                      <span class="delete-btn" title="Remove option">✖</span>
+                      <span class="delete-btn" title="Delete option">✖</span>
                     `;
                   } else {
                     optionDiv.innerHTML = `
                       <input type="${frontendType}" name="${q.name}" />
                       <input type="text" class="option-text" value="${opt.label.replace(/"/g, '&quot;')}" placeholder="Option value" />
-                      <span class="delete-btn" title="Remove option">✖</span>
+                      <span class="delete-btn" title="Delete option">✖</span>
                     `;
                   }
                   
                   optionsDiv.appendChild(optionDiv);
                 });
                 
-                // Add the "Add option" link if it doesn't exist
+                // Add "Add option" link if it doesn't exist
                 if (!questionBody.querySelector('.add-option')) {
                   const addOptionLink = document.createElement("div");
                   addOptionLink.className = "add-option";
@@ -3016,7 +3083,7 @@ function loadForm(data) {
           }
         }, 10);
       } else {
-        // Para otros tipos, solo disparar el evento change
+        // For other types, just trigger change event
         setTimeout(() => {
           const select = block.querySelector('.type-select');
           if (select) {
@@ -3029,17 +3096,17 @@ function loadForm(data) {
     });
   };
 
-  // Cargar bloques secuencialmente para evitar race conditions
+  // Load blocks sequentially to avoid race conditions
   const loadBlocksSequentially = async () => {
     for (const q of (data.questionsConfig || [])) {
       await createBlockWithOptions(q);
     }
     
-    // Guardar copia global de la config original
+    // Save global copy of original configuration
     questionsConfig = data.questionsConfig || [];
     window.questionsConfig = questionsConfig;
     
-    // Generar la preview
+    // Generate preview
     generatePreviewFromConfig({
       logoConfig: data.logoConfig || {},
       titleConfig: data.titleConfig || {},
